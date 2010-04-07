@@ -1,0 +1,493 @@
+/*
+** MediaWiki 'monobook' style sheet for CSS2-capable browsers.
+** Copyright Gabriel Wicke - http://wikidev.net/
+** License: GPL (http://www.gnu.org/copyleft/gpl.html)
+**
+** Loosely based on http://www.positioniseverything.net/ordered-floats.html by Big John
+** and the Plone 2.0 styles, see http://plone.org/ (Alexander Limi,Joe Geldart & Tom Croucher,
+** Michael Zeltner and Geir B?kholt)
+** All you guys rock :)
+*/
+
+body {
+    font: x-small sans-serif;
+    background: #ffffff;
+    color: Black;
+    margin: 10;
+    padding: 0;
+}
+
+/* scale back up to a sane default */
+#globalWrapper {
+    font-size:127%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+.visualClear { clear: both; }
+
+/* general styles */
+
+table {
+    font-size: 100%;
+    background: White;
+}
+a {
+    text-decoration: none;
+    color: #002bb8;
+    background: none;
+}
+a:visited { color: #5a3696; }
+a:active { color: #ffa500; }
+a:hover { text-decoration: underline; }
+a.stub { color: #772233; }
+a.new,
+
+a.new:visited,
+
+
+img {
+    border: none;
+    vertical-align: middle;
+}
+p {
+    margin: 0.4em 0em 0.5em 0em;
+    line-height: 1.5em;
+}
+
+p:first-letter {
+	margin-left: 2em;
+}
+
+p img { margin: 0; }
+
+hr {
+    height: 1px;
+    color: #aaaaaa;
+    background-color: #aaaaaa;
+    border: 0;
+    margin: 0.2em 0 0.2em 0;
+}
+
+ul {
+    line-height: 1.5em;
+    list-style-type: square;
+    margin: 0.3em 0 0 1.5em;
+    padding:0;
+    list-style-image: url("../../skins/monobook/bullet.gif");
+}
+ol {
+    line-height: 1.5em;
+    margin: 0.3em 0 0 3.2em;
+    padding:0;
+    list-style-image: none;
+}
+li { margin-bottom: 0.1em; }
+dt {
+    font-weight: bold;
+    margin-bottom: 0.1em;
+}
+dl{
+    margin-top: 0.2em;
+    margin-bottom: 0.5em;
+}
+dd {
+    line-height: 1.5em;
+    margin-left: 2em;
+    margin-bottom: 0.1em;
+}
+
+fieldset {
+    border: 1px solid #2f6fab;
+    margin: 1em 0em 1em 0em;
+    padding: 0em 1em 1em 1em;
+    line-height: 1.5em;
+}
+legend {
+    background: White;
+    padding: 0.5em;
+    font-size: 95%;
+}
+form {
+    border: none;
+    margin: 0;
+}
+
+textarea {
+    color: Black;
+    background-color: white;
+    width: 100%;
+    padding: 0.1em;
+}
+
+
+input.historysubmit {
+    padding: 0 0.3em 0.3em 0.3em !important;
+    font-size: 94%;
+    cursor: pointer;
+    height: 1.7em !important;
+    margin-left: 1.6em;
+}
+select {
+	vertical-align: top;
+}
+abbr, acronym, .explain {
+    border-bottom: 1px dotted Black;
+    color: Black;
+    background: none;
+    cursor: help;
+}
+q {
+    font-family: Times, "Times New Roman", serif;
+    font-style: italic;
+}
+/* disabled for now
+blockquote {
+    font-family: Times, "Times New Roman", serif;
+    font-style: italic;
+}*/
+code { background-color: #f9f9f9; }
+pre {
+	font-size: 100%;
+	padding: 1em;
+    border: 1px dashed #2f6fab;
+    color: Black;
+    background-color: #f9f9f9;
+    line-height: 1.1em;
+}
+
+
+/*
+** the main content area
+*/
+
+
+span.subpages { display: block; }
+
+/* Some space under the headers in the content area */
+#bodyContent h1, #bodyContent h2 { margin-bottom:0.6em; }
+#bodyContent h3,
+#bodyContent h4,
+#bodyContent h5 {
+    margin-bottom: 0.3em;
+}
+.firstHeading { margin-bottom:0.1em; }
+
+/* user notification thing */
+
+/* currently unused, intended to be used by a metadata box
+in the bottom-right corner of the content area */
+
+/* small for tables and similar */
+.small, .small * { font-size: 94%; }
+table.small { font-size: 100% }
+
+/*
+** content styles
+*/
+
+#toc {
+    /*border:1px solid #2f6fab;*/
+    border:1px solid #aaaaaa;
+    background-color:#f9f9f9;
+    padding:5px;
+    font-size: 95%;
+}
+#toc .tocindent { margin-left: 2em; }
+#toc .tocline { margin-bottom: 0px; }
+#toc p { margin: 0 }
+#toc .toctoggle { font-size: 94%; }
+#toc .editsection {
+    margin-top: 0.7em;
+    font-size: 94%;
+}
+
+/* emulate center */
+.center {
+    width: 100%;
+    text-align: center;
+}
+*.center * {
+    margin-left: auto;
+    margin-right: auto;
+}
+/* small for tables and similar */
+.small, .small * { font-size: 94%; }
+table.small { font-size: 100% }
+
+/* images */
+div.floatright, table.floatright {
+    clear: right;
+    float: right;
+    position: relative;
+    margin: 0 0 0.5em 0.5em;
+    border: 0
+/*
+    border: 0.5em solid White;
+    border-width: 0.5em 0 0.8em 1.4em;
+*/
+}
+div.floatright p { font-style: italic; }
+div.floatleft, table.floatleft {
+    float: left;
+    position: relative;
+    margin: 0 0.5em 0.5em 0;
+    border: 0
+/*
+    margin: 0.3em 0.5em 0.5em 0;
+    border: 0.5em solid White;
+    border-width: 0.5em 1.4em 0.8em 0;
+*/
+}
+div.floatleft p { font-style: italic; }
+/* thumbnails */
+div.thumb {
+    margin-bottom: 0.5em;
+    border-style: solid; border-color: White;
+    width: auto;
+}
+div.thumb div {
+    border:1px solid #cccccc;
+    padding: 3px !important;
+    background-color:#f9f9f9;
+    font-size: 94%;
+    text-align: center;
+    overflow: hidden;
+}
+div.thumb div a img {
+    border:1px solid #cccccc;
+}
+div.thumb div div.thumbcaption {
+    border: none;
+    text-align: left;
+    line-height: 1.4em;
+    padding: 0.3em 0 0.1em 0;
+}
+div.magnify {
+    float: right;
+    border: none !important;
+    background: none !important;
+}
+div.magnify a, div.magnify img {
+    display: block;
+    border: none !important;
+    background: none !important;
+}
+div.tright {
+    clear: right;
+    float: right;
+    border-width: 0.5em 0 0.8em 1.4em;
+}
+div.tleft {
+    float: left;
+    margin-right:0.5em;
+    border-width: 0.5em 1.4em 0.8em 0;
+}
+.urlexpansion,
+.hiddenStructure {
+    display: none;
+}
+img.tex { vertical-align: middle; }
+span.texhtml { font-family: serif; }
+
+/*
+** classes for special content elements like town boxes
+** intended to be referenced directly from the wiki src
+*/
+
+/*
+** User styles
+*/
+/* table standards */
+table.rimage {
+    float:right;
+    position:relative;
+    margin-left:1em;
+    margin-bottom:1em;
+    text-align:center;
+}
+.toccolours {
+    border:1px solid #aaaaaa;
+    background-color:#f9f9f9;
+    padding:5px;
+    font-size: 95%;
+}
+div.townBox {
+    position:relative;
+    float:right;
+    background:White;
+    margin-left:1em;
+    border: 1px solid gray;
+    padding:0.3em;
+    width: 200px;
+    overflow: hidden;
+    clear: right;
+}
+div.townBox dl {
+    padding: 0;
+    margin: 0 0 0.3em 0;
+    font-size: 96%;
+}
+div.townBox dl dt {
+    background: none;
+    margin: 0.4em 0 0 0;
+}
+div.townBox dl dd {
+    margin: 0.1em 0 0 1.1em;
+    background-color: #f3f3f3;
+}
+
+/*
+** edit views etc
+*/
+.special li {
+    line-height: 1.4em;
+    margin: 0;
+    padding: 0;
+}
+
+/* Page history styling */
+/* the auto-generated edit comments */
+
+
+/*
+** keep the whitespace in front of the ^=, hides rule from konqueror
+** this is css3, the validator doesn't like it when validating as css2
+*/
+#bodyContent a[href ^="http://"],
+#bodyContent a[href ^="gopher://"] {
+    padding-right: 13px;
+}
+#bodyContent a[href ^="https://"],
+.link-https {
+    background: url("../../skins/monobook/lock_icon.gif") center right no-repeat;
+    padding-right: 16px;
+}
+#bodyContent a[href ^="mailto:"],
+.link-mailto {
+    background: url("../../skins/monobook/mail_icon.gif") center right no-repeat;
+    padding-right: 18px;
+}
+#bodyContent a[href ^="news://"] {
+    background: url("../../skins/monobook/news_icon.png") center right no-repeat;
+    padding-right: 18px;
+}
+#bodyContent a[href ^="ftp://"],
+.link-ftp {
+    background: url("../../skins/monobook/file_icon.gif") center right no-repeat;
+    padding-right: 18px;
+}
+#bodyContent a[href ^="irc://"],
+.link-irc {
+    background: url("../../skins/monobook/discussionitem_icon.gif") center right no-repeat;
+    padding-right: 18px;
+}
+/* disable interwiki styling */
+#bodyContent a.extiw,
+
+#bodyContent a.external { color: #3366bb; }
+/* this can be used in the content area to switch off
+special external link styling */
+
+/*
+** Structural Elements
+*/
+
+/*
+** general portlet styles (elements in the quickbar)
+*/
+
+
+
+
+div.prefsectiontip {
+    font-size: 95%;
+    margin-top: 1em;
+}
+fieldset.operaprefsection { margin-left: 15em }
+
+
+.redirectText {
+	font-size:150%;
+	margin:5px;
+}
+
+.printfooter {
+        display: none;
+}
+
+.not_patrolled {
+	background-color: #ffa;
+}
+div.patrollink {
+	font-size: 75%;
+	text-align: right;
+}
+span.newpage, span.minor, span.searchmatch {
+	font-weight: bold;
+}
+span.unpatrolled {
+	font-weight:bold;
+	color:red;
+}
+
+span.searchmatch {
+	color: red;
+}
+.sharedUploadNotice {
+        font-style: italic;
+}
+
+span.updatedmarker {
+	color:black;
+	background-color:#00FF00;
+}
+span.newpageletter {
+	font-weight:bold;
+	color:black;
+	background-color:yellow;
+}
+span.minoreditletter {
+	color:black;
+	background-color:#C5FFE6;
+}
+
+table.gallery {
+	border:  1px solid #cccccc;
+	margin:  2px;
+	padding: 2px;
+	background-color:#ffffff;
+}
+
+table.gallery tr {
+	vertical-align:top;
+}
+
+table.gallery td {
+	vertical-align:top;
+	background-color:#f9f9f9;
+	border: solid 2px white;
+}
+
+div.gallerybox {
+	margin: 2px;
+	width:  150px;
+}
+
+div.gallerybox div.thumb {
+	text-align: center;
+	border: 1px solid #cccccc;
+	margin: 2px;
+}
+
+div.gallerytext {
+	font-size: 94%;
+	padding: 2px 4px;
+}
+
+#fundraising {
+ text-align: center;
+ border: 1px solid gray;
+ padding: 5px;
+ margin-top: 5px;
+}
