@@ -55,7 +55,7 @@ if (!$egS5SlideTemplateFile)
 
 $wgExtensionFunctions[] = 'S5SlideShow_Setup';
 $wgHooks['UnknownAction'][] = 'S5SlideShow_UnknownAction';
-$wgAutoloadClasses['S5SlideShow'] = dirname(__FILE__).'/slide.class.php';
+$wgAutoloadClasses['S5SlideShow'] = dirname(__FILE__).'/S5SlideShow.class.php';
 
 function S5SlideShow_Setup()
 {
