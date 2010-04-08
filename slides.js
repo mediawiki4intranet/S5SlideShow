@@ -456,7 +456,7 @@ function fontScale() {
 		var hSize = 1024; // these do not account for kiosk mode or Opera Show
 	}
 	var newSize;
-	if (s5ScaleEachSlide)
+	if (s5ScaleEachSlide && snum > 0)
 	{
 		// <vfilippov@custis.ru> Experimental font scaling for each slide independently
 		var doch = document.getElementById('slide'+snum).scrollHeight;
