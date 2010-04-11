@@ -35,17 +35,6 @@ sup {font-size: smaller; line-height: 1px;}
 .slide code {padding: 2px 0.25em; font-weight: bold; color: #555;}
 .slide code.bad, code del {color: red;}
 .slide code.old {color: silver;}
-.slide pre {font-size: .7em;
-	margin: 0 auto;
-	background-color: #f3f3f3;
-	border: 1px solid #d5d5d5;
-	width: 80%;
-	padding: 20px;}
-.slide pre code {display: block;}
-.slide pre code span {
-	font-weight: normal;
-	font-size: 0.98em;
-}
 .slide ul {margin-left: 85px; margin-right: 3%; list-style: disc; padding: 0;}
 .slide li {margin-top: 5px; margin-right: 0;}
 .slide ul ul {line-height: 1;}
