@@ -175,8 +175,8 @@ class S5SlideShow
                 /* make slide lists incremental if needed */
                 if ($slide['inc'])
                 {
-                    $slideContent = str_replace('<ul>', '<ul class="incremental">', $slideContent);
-                    $slideContent = str_replace('<ol>', '<ol class="incremental">', $slideContent);
+                    $slideContent = str_replace('<ul>', '<ul class="anim">', $slideContent);
+                    $slideContent = str_replace('<ol>', '<ol class="anim">', $slideContent);
                 }
                 if ($sc > 1)
                     $title .= " (".($i+1)."/$sc)";

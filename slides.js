@@ -145,6 +145,7 @@ function go(step) {
 	var ce = document.getElementById(cid);
 	if (incrementals[snum].length > 0) {
 		for (var i = 0; i < incrementals[snum].length; i++) {
+			removeClass(incrementals[snum][i], 'previous');
 			removeClass(incrementals[snum][i], 'current');
 			removeClass(incrementals[snum][i], 'incremental');
 		}
@@ -198,6 +199,7 @@ function goTo(target) {
 function subgo(step) {
 	if (step > 0) {
 		removeClass(incrementals[snum][incpos - 1],'current');
+		addClass(incrementals[snum][incpos - 1],'previous');
 		removeClass(incrementals[snum][incpos], 'incremental');
 		addClass(incrementals[snum][incpos],'current');
 		incpos++;
@@ -519,30 +521,25 @@ function getIncrementals(obj) {
 	if (!obj) 
 		return incrementals;
 	var children = obj.childNodes;
-	for (var i = 0; i < children.length; i++) {
+	for (var i = 0; i < children.length; i++)
+	{
 		var child = children[i];
-		if (hasClass(child, 'incremental')) {
-			if (child.nodeName == 'OL' || child.nodeName == 'UL') {
-				removeClass(child, 'incremental');
-				for (var j = 0; j < child.childNodes.length; j++) {
-					if (child.childNodes[j].nodeType == 1) {
-						addClass(child.childNodes[j], 'incremental');
-					}
-				}
-			} else {
-				incrementals[incrementals.length] = child;
-				removeClass(child,'incremental');
+		if (hasClass(child, 'anim'))
+		{
+			for (var j = 0; j < child.childNodes.length; j++)
+				if (child.childNodes[j].nodeType == 1)
+					addClass(child.childNodes[j], 'incremental');
+			if (hasClass(child, 'show-first'))
+			{
+				removeClass(child, 'show-first');
+				if (child.childNodes[isGe].nodeType == 1)
+					removeClass(child.childNodes[isGe], 'incremental');
 			}
 		}
-		if (hasClass(child, 'show-first')) {
-			if (child.nodeName == 'OL' || child.nodeName == 'UL') {
-				removeClass(child, 'show-first');
-				if (child.childNodes[isGe].nodeType == 1) {
-					removeClass(child.childNodes[isGe], 'incremental');
-				}
-			} else {
-				incrementals[incrementals.length] = child;
-			}
+		else if (hasClass(child, 'incremental'))
+		{
+			incrementals[incrementals.length] = child;
+			removeClass(child,'incremental');
 		}
 		incrementals = incrementals.concat(getIncrementals(child));
 	}
