@@ -165,17 +165,24 @@ function go(step) {
 		ne = document.getElementById('slide0');
 		snum = 0;
 	}
-	if (step < 0) {incpos = incrementals[snum].length} else {incpos = 0;}
-	if (incrementals[snum].length > 0 && incpos == 0) {
-		for (var i = 0; i < incrementals[snum].length; i++) {
-			if (hasClass(incrementals[snum][i], 'current'))
-				incpos = i + 1;
-			else
-				addClass(incrementals[snum][i], 'incremental');
+	if (step < 0) {incpos = incrementals[snum].length} else {incpos = 1}
+	if (incrementals[snum].length > 0) {
+		for (var i = 0; i < incrementals[snum].length && i < incpos-1; i++)
+		{
+			addClass(incrementals[snum][i], 'previous');
+			removeClass(incrementals[snum][i], 'current');
+			removeClass(incrementals[snum][i], 'incremental');
+		}
+		removeClass(incrementals[snum][incpos-1], 'previous');
+		addClass(incrementals[snum][incpos-1], 'current');
+		removeClass(incrementals[snum][incpos-1], 'incremental');
+		for (var i = incpos; i < incrementals[snum].length; i++)
+		{
+			removeClass(incrementals[snum][i], 'previous');
+			removeClass(incrementals[snum][i], 'current');
+			addClass(incrementals[snum][i], 'incremental');
 		}
 	}
-	if (incrementals[snum].length > 0 && incpos > 0)
-		addClass(incrementals[snum][incpos - 1], 'current');
 	if (isOp) { //hallvord
 		location.hash = nid;
 		window.scrollTo(0);
@@ -207,6 +214,7 @@ function subgo(step) {
 		incpos--;
 		removeClass(incrementals[snum][incpos],'current');
 		addClass(incrementals[snum][incpos], 'incremental');
+		removeClass(incrementals[snum][incpos - 1],'previous');
 		addClass(incrementals[snum][incpos - 1],'current');
 	}
 	loadNote();
@@ -290,7 +298,7 @@ function keys(key) {
 			case 38: // upkey
 				if(number != undef) {
 					go(-1 * number);
-				} else if (!incrementals[snum] || incpos <= 0) {
+				} else if (!incrementals[snum] || incpos <= 1) {
 					go(-1);
 				} else {
 					subgo(-1);
@@ -516,10 +524,12 @@ function notOperaFix() {
 	}
 }
 
-function getIncrementals(obj) {
+function getIncrementals(obj, inclen) {
 	var incrementals = new Array();
-	if (!obj) 
+	if (!obj)
 		return incrementals;
+	if (!inclen)
+		inclen = 0;
 	var children = obj.childNodes;
 	for (var i = 0; i < children.length; i++)
 	{
@@ -529,19 +539,13 @@ function getIncrementals(obj) {
 			for (var j = 0; j < child.childNodes.length; j++)
 				if (child.childNodes[j].nodeType == 1)
 					addClass(child.childNodes[j], 'incremental');
-			if (hasClass(child, 'show-first'))
-			{
-				removeClass(child, 'show-first');
-				if (child.childNodes[isGe].nodeType == 1)
-					removeClass(child.childNodes[isGe], 'incremental');
-			}
 		}
 		else if (hasClass(child, 'incremental'))
 		{
 			incrementals[incrementals.length] = child;
 			removeClass(child,'incremental');
 		}
-		incrementals = incrementals.concat(getIncrementals(child));
+		incrementals = incrementals.concat(getIncrementals(child, incrementals.length));
 	}
 	return incrementals;
 }
