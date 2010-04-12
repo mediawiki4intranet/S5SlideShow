@@ -13,7 +13,7 @@ body {
     font: x-small sans-serif;
     background: #ffffff;
     color: Black;
-    margin: 10;
+    margin: 10px;
     padding: 0;
 }
 
@@ -53,10 +53,6 @@ img {
 p {
     margin: 0.4em 0em 0.5em 0em;
     line-height: 1.5em;
-}
-
-p:first-letter {
-	margin-left: 2em;
 }
 
 p img { margin: 0; }

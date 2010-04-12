@@ -8,3 +8,4 @@ html>body div#header, html>body div#footer,
 .slide, .hideme, .incremental {visibility: hidden;}
 #slide0 {visibility: visible;}
 .anim.over .incremental, .anim.over .previous {display: none;}
+.notitle .slidecontent {margin: auto; display: table;}

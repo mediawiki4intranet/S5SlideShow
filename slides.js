@@ -469,8 +469,12 @@ function fontScale() {
 	if (s5ScaleEachSlide && snum > 0)
 	{
 		// <vfilippov@custis.ru> Experimental font scaling for each slide independently
-		var doch = document.getElementById('slide'+snum).scrollHeight;
-		var docw = document.getElementById('slide'+snum).childNodes[1].scrollWidth;
+		var s = document.getElementById('slide'+snum);
+		var docw, doch = s.scrollHeight;
+		if (s.childNodes.length > 1)
+			docw = s.childNodes[1].scrollWidth;
+		else
+			docw = s.childNodes[0].scrollWidth;
 		newSize = Math.round(Math.min(lastfontsize/doch*vSize, lastfontsize/docw*hSize));
 	}
 	else

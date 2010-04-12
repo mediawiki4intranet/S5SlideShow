@@ -108,11 +108,13 @@ class S5SlideShow
         $attr['style'] = trim($attr['style']);
         if (!$attr['style'])
             $attr['style'] = 'default';
+        /* Additional CSS */
+        $attr['addcss'] = trim($attr['addcss']);
         /* Is each slide to be scaled independently? */
         $attr['scaled'] = strtolower(trim($attr['scaled']));
         $attr['scaled'] = $attr['scaled'] == 'true' || $attr['scaled'] == 'yes' || $attr['scaled'] == 1;
         /* Extract values into $this */
-        foreach(split(' ', 'style title subtitle author footer subfooter headingmark incmark pagebreak scaled') as $v)
+        foreach(split(' ', 'style title subtitle author footer subfooter headingmark incmark pagebreak scaled addcss') as $v)
             $this->$v = $attr[$v];
     }
 
@@ -170,7 +172,7 @@ class S5SlideShow
             foreach ($ms as $i => $ss)
             {
                 $title = $slide['title'];
-                $output = $fileParser->parse($ss."\n__NOTOC__\n__NOEDITSECTION__", $this->sTitle, $options);
+                $output = $fileParser->parse(trim($ss)." __NOTOC__ __NOEDITSECTION__", $this->sTitle, $options);
                 $slideContent = $output->getText();
                 /* make slide lists incremental if needed */
                 if ($slide['inc'])
@@ -178,17 +180,23 @@ class S5SlideShow
                     $slideContent = str_replace('<ul>', '<ul class="anim">', $slideContent);
                     $slideContent = str_replace('<ol>', '<ol class="anim">', $slideContent);
                 }
-                if ($sc > 1)
-                    $title .= " (".($i+1)."/$sc)";
-                $title = $fileParser->parse($title, $this->sTitle, $options, false, false)->getText();
-                $fc .= "<div class=\"slide\"><h1>$title</h1><div class=\"slidecontent\">$slideContent</div></div>\n";
+                if ($title)
+                {
+                    if ($sc > 1)
+                        $title .= " (".($i+1)."/$sc)";
+                    $title = $fileParser->parse($title, $this->sTitle, $options, false, false)->getText();
+                    $fc .= "<div class=\"slide\"><h1>$title</h1><div class=\"slidecontent\">$slideContent</div></div>\n";
+                }
+                else
+                    $fc .= "<div class=\"slide notitle\"><div class=\"slidecontent\">$slideContent</div></div>\n";
             }
         }
 
         # build replacement array
         $replace = array();
-        foreach(split(' ', 'title subtitle author footer subfooter') as $v)
+        foreach(split(' ', 'title subtitle author footer subfooter addcss') as $v)
             $replace["[$v]"] = $fileParser->parse($this->$v, $this->sTitle, $options, false)->getText();
+        $replace['[addcss]'] = strip_tags($replace['[addcss]']);
         $replace['[style]'] = $this->style;
         $replace['[content]'] = $fc;
         $replace['[pageid]'] = $this->sArticle->getID();
