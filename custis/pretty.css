@@ -71,11 +71,6 @@ ul.urls {list-style: none; display: inline; margin: 0;}
 .external {border-bottom: 1px dotted gray;}
 html>body .external {border-bottom: none;}
 
-.incremental, .incremental *, .incremental *:after {color: #DDE; visibility: visible;}
-img.incremental {visibility: hidden;}
-.slide .current {color: #B02;}
-
-
 /* diagnostics
 
 li:after {content: " [" attr(class) "]"; color: #F88;}

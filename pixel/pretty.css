@@ -83,7 +83,6 @@ ul.urls {list-style: none; display: inline; margin: 0;}
 html>body .external {border-bottom: none;}
 
 .incremental, .incremental *, .incremental *:after {color: #DDE; visibility: visible;}
-img.incremental {visibility: hidden;}
 .slide .current {color: #B02;}
 
 
