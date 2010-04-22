@@ -1,5 +1,5 @@
 h1, h2, h3, h4 {font-size: 100%; margin: 0; padding: 0; font-weight: inherit;}
-ul, pre {margin: 0; line-height: 1em;}
+pre {margin: 0; line-height: 1em;}
 html, body {margin: 0; padding: 0;}
 
 .slide blockquote {border: 0.1cm dashed #ffc000; padding: 0.2cm;}
