@@ -67,6 +67,9 @@ function S5SlideShow_UnknownAction($action, $article)
 {
     if ($action == 'slide')
     {
+        $title = $article->getTitle();
+        if (method_exists($title, 'userCanReadEx') && !$title->userCanReadEx())
+            return true;
         global $wgRequest;
         $content = $wgRequest->getVal('wpTextbox1');
         if (!$content)
@@ -74,7 +77,7 @@ function S5SlideShow_UnknownAction($action, $article)
             $content = $_SESSION['wpTextbox1'];
             unset($_SESSION['wpTextbox1']);
         }
-        $slideShow = new S5SlideShow($article->getTitle(), $content);
+        $slideShow = new S5SlideShow($title, $content);
         if ($style = trim($wgRequest->getText('s5style')))
             $slideShow->style = $style;
         $slideShow->genSlideFile();
