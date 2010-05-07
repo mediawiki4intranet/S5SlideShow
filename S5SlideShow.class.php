@@ -65,7 +65,7 @@ class S5SlideShow
     /* Parse attribute hash and save them into $this */
     function setAttributes($attr)
     {
-        global $wgContLang, $egS5SlideHeadingMark, $egS5SlideIncMark, $egS5SlidePageBreak;
+        global $wgContLang, $wgUser, $egS5SlideHeadingMark, $egS5SlideIncMark, $egS5SlidePageBreak;
         /* Get attributes from tag content */
         if (preg_match_all('/(?:^|\n)\s*;\s*([^:\s]*)\s*:\s*([^\n]*)/is', $attr['content'], $m, PREG_SET_ORDER) > 0)
             foreach ($m as $set)
@@ -82,6 +82,8 @@ class S5SlideShow
             $u = $u[0];
             if (!is_object($u))
                 $u = User::newFromName($u);
+            if (!is_object($u))
+                $u = $wgUser;
             $attr['author'] = $u->getRealName();
         }
         /* Slide show title in the footer by default */
