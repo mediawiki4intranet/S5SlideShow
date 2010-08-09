@@ -1,7 +1,7 @@
 <?php
 
 # Copyright (C) 2010 Vitaliy Filippov <vitalif@mail.ru>
-# Based on (C) 2005 TooooOld <tianshuen@gmail.com>
+# Based on (C) 2005 TooooOld <tianshuen@gmail.com>, but heavily modified
 # http://meta.wikimedia.org/wiki/User:BR/use_S5_slide_system_in_the_mediawiki/en
 #
 # This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,17 @@
 # http://www.gnu.org/copyleft/gpl.html
 
 /**
- * Extension to create slide show
+ * Extension to create slide shows from wiki pages
  *
- * @author TooooOld <tianshuen@gmail.com>
+ * @author Vitaliy Filippov <vitalif@mail.ru>
  * @package MediaWiki
  * @subpackage Extensions
  */
 
 if (!defined('MEDIAWIKI'))
     die();
+
+$wgAutoloadClasses['DOMParseUtils'] = dirname(__FILE__).'/DOMParseUtils.php';
 
 class S5SlideShow
 {
@@ -120,62 +122,85 @@ class S5SlideShow
             $this->$v = $attr[$v];
     }
 
-    /* Split $content to slides and save them into $this->mSlides */
+    /* Extract slides from wiki-text $content */
     function loadContent($content)
     {
-        $secs = preg_split('/(^=+[^=].*?=+)(?!\S)/mi', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
-        $secCount = count($secs);
-        $this->mSlides = array();
-        for ($i = 1; $i < $secCount; $i += 2)
+        $html = $this->parse($content);
+        $document = DOMParseUtils::loadDOM($html);
+        $slides = DOMParseUtils::getSections($document->documentElement, $document, $this->headingmark);
+        foreach ($slides as &$slide)
         {
-            $title = preg_replace('/^=+\s*(.*?)\s*=+$/is', '\1', $secs[$i]);
-            /* check for heading mark */
-            if ($this->headingmark && !self::strCheck($title, $this->headingmark))
-                continue;
-            $inc = false;
-            if ($this->incmark && self::strCheck($title, $this->incmark))
-                $inc = true;
-            $this->mSlides[] = array(
-                'title'   => $title,
-                'content' => $secs[$i+1],
-                'inc'     => $inc,
-            );
+            /* check for incremental mark */
+            if ($this->incmark && ($new_node = DOMParseUtils::checkNode($slide['title'], $document, $this->incmark)))
+            {
+                $slide['title'] = $new_node;
+                $slide['incremental'] = true;
+            }
+            $slide['title_html'] = DOMParseUtils::saveChildNodesXML($slide['title'], $document);
+            /* optionally break slide into pages */
+            if ($this->pagebreak)
+            {
+                $frags = DOMParseUtils::splitDOM($slide['content'], $document, $this->pagebreak);
+                $slide['pages'] = array();
+                foreach ($frags as $frag)
+                    $slide['pages'][] = array(
+                        'content' => $frag,
+                        'content_html' => DOMParseUtils::saveChildNodesXML($frag, $document),
+                    );
+            }
+            else
+            {
+                $slide['pages'] = array(array(
+                    'content' => $slide['content'],
+                    'content_html' => DOMParseUtils::saveChildNodesXML($slide['content'], $document),
+                ));
+            }
         }
-        return true;
+        return $slides;
     }
 
+    /* Parse text using a copy of $wgParser and return resulting HTML */
+    var $slideParser, $parserOptions;
+    function parse($text, $inline = false)
+    {
+        global $wgParser, $wgUser;
+        if (!$this->slideParser)
+        {
+            $this->slideParser = clone $wgParser;
+            $this->slideParser->setHook('slide', 'S5SlideShow::fakeSlide');
+            $this->parserOptions = ParserOptions::newFromUser($wgUser);
+            $this->parserOptions->setEditSection(false);
+            $this->parserOptions->setNumberHeadings(false);
+            $output = $this->slideParser->parse(" ", $this->sTitle, $this->parserOptions, false, true);
+        }
+        $this->slideParser->mShowToc = false;
+        $text = str_replace("__TOC__", '', trim($text));
+        $output = $this->slideParser->parse("$text __NOTOC__ __NOEDITSECTION__", $this->sTitle, $this->parserOptions, !$inline, false);
+        return $output->getText();
+    }
+
+    /* Generate output presentation */
     function genSlideFile()
     {
         global $egS5SlideTemplateFile;
-        global $wgUser, $wgContLang, $wgOut, $wgParser;
+        global $wgUser, $wgContLang, $wgOut;
 
         if (!$this->mSlides)
-            $this->loadContent($this->mPageContent);
+            $this->mSlides = $this->loadContent($this->mPageContent);
 
-        # get template
+        /* load template contents */
         $ce_slide_tpl = @file_get_contents($egS5SlideTemplateFile);
         if (!$ce_slide_tpl)
             return false;
 
-        # generate content
         $fc = '';
-
-        $options = ParserOptions::newFromUser($wgUser);
-        $fileParser = clone $wgParser;
-        $fileParser->setHook('slide', 'S5SlideShow::fakeSlide');
-
         foreach ($this->mSlides as $slide)
         {
-            if ($this->pagebreak)
-                $ms = preg_split('/'.preg_quote($this->pagebreak).'$/mi', $slide['content']);
-            else
-                $ms = array(0 => $slide['content']);
-            $sc = count($ms);
-            foreach ($ms as $i => $ss)
+            $sc = count($slide['pages']);
+            foreach ($slide['pages'] as $i => $page)
             {
-                $title = $slide['title'];
-                $output = $fileParser->parse(trim($ss)." __NOTOC__ __NOEDITSECTION__", $this->sTitle, $options);
-                $slideContent = $output->getText();
+                $title = $slide['title_html'];
+                $slideContent = $page['content_html'];
                 /* make slide lists incremental if needed */
                 if ($slide['inc'])
                 {
@@ -186,7 +211,6 @@ class S5SlideShow
                 {
                     if ($sc > 1)
                         $title .= " (".($i+1)."/$sc)";
-                    $title = $fileParser->parse($title, $this->sTitle, $options, false, false)->getText();
                     $fc .= "<div class=\"slide\"><h1>$title</h1><div class=\"slidecontent\">$slideContent</div></div>\n";
                 }
                 else
@@ -194,17 +218,17 @@ class S5SlideShow
             }
         }
 
-        # build replacement array
+        /* build replacement array for presentation template */
         $replace = array();
         foreach(split(' ', 'title subtitle author footer subfooter addcss') as $v)
-            $replace["[$v]"] = $fileParser->parse($this->$v, $this->sTitle, $options, false)->getText();
+            $replace["[$v]"] = $this->parse($this->$v, true);
         $replace['[addcss]'] = strip_tags($replace['[addcss]']);
         $replace['[style]'] = $this->style;
         $replace['[content]'] = $fc;
         $replace['[pageid]'] = $this->sArticle->getID();
         $replace['[scaled]'] = $this->scaled ? 'true' : 'false';
 
-        # substitute values
+        /* substitute values */
         $fileContent = str_replace(
             array_keys($replace),
             array_values($replace),
@@ -212,7 +236,7 @@ class S5SlideShow
         );
         $fileContent = $wgContLang->Convert($fileContent);
 
-        # output content
+        /* output generated content */
         $wgOut->disable();
         header("Content-Type: text/html; charset=utf-8");
         echo $fileContent;
