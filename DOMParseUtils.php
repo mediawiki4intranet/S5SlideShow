@@ -64,6 +64,8 @@ class DOMParseUtils
     /* Extract entitled sections from $element using DOM */
     static function getSections($element, $document, $headingmark = false)
     {
+        if (!$element->childNodes->length)
+            return NULL;
         $sections = array();
         $sect = NULL;
         foreach ($element->childNodes as $child)
@@ -108,7 +110,7 @@ class DOMParseUtils
         $dom = new DOMDocument();
         $oe = error_reporting();
         error_reporting($oe & ~E_WARNING);
-        $dom->loadHTML("<?xml version='1.0' encoding='UTF-8'?>$html");
+        $dom->loadHTML("<?xml version='1.0' encoding='UTF-8'?>".mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
         error_reporting($oe);
         return $dom;
     }
