@@ -74,12 +74,12 @@ class DOMParseUtils
             {
                 /* optionally check for heading mark */
                 if (preg_match('/^h\d$/is', $child->nodeName) &&
-                    (!$headingmark || ($child = self::checkNode($child, $document, $headingmark))))
+                    (!$headingmark || ($newchild = self::checkNode($child, $document, $headingmark))))
                 {
                     if ($sect)
                         $sections[] = $sect;
                     $sect = array(
-                        'title'   => $child,
+                        'title'   => $newchild,
                         'content' => $document->createElement('slide'),
                     );
                     continue;
