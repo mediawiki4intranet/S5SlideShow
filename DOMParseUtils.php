@@ -73,15 +73,20 @@ class DOMParseUtils
             if ($child->nodeType == XML_ELEMENT_NODE)
             {
                 /* optionally check for heading mark */
-                if (preg_match('/^h\d$/is', $child->nodeName) &&
-                    (!$headingmark || ($newchild = self::checkNode($child, $document, $headingmark))))
+                if (preg_match('/^h\d$/is', $child->nodeName))
                 {
                     if ($sect)
+                    {
                         $sections[] = $sect;
-                    $sect = array(
-                        'title'   => $newchild,
-                        'content' => $document->createElement('slide'),
-                    );
+                        $sect = NULL;
+                    }
+                    if (!$headingmark || ($child = self::checkNode($child, $document, $headingmark)))
+                    {
+                        $sect = array(
+                            'title'   => $child,
+                            'content' => $document->createElement('slide'),
+                        );
+                    }
                     continue;
                 }
                 /* If an element contains interesting sections, it is excluded from output */
