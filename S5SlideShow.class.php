@@ -127,16 +127,16 @@ class S5SlideShow
     {
         $html = $this->parse($content);
         $document = DOMParseUtils::loadDOM($html);
-        $slides = DOMParseUtils::getSections($document->documentElement, $document, $this->headingmark);
+        $slides = DOMParseUtils::getSections($document->documentElement, $this->headingmark);
         foreach ($slides as &$slide)
         {
             /* check for incremental mark */
-            if ($this->incmark && ($new_node = DOMParseUtils::checkNode($slide['title'], $document, $this->incmark)))
+            if ($this->incmark && ($new_node = DOMParseUtils::checkNode($slide['title'], $this->incmark)))
             {
                 $slide['title'] = $new_node;
                 $slide['incremental'] = true;
             }
-            $slide['title_html'] = DOMParseUtils::saveChildNodesXML($slide['title'], $document);
+            $slide['title_html'] = DOMParseUtils::saveChildNodesXML($slide['title']);
             /* optionally break slide into pages */
             if ($this->pagebreak)
             {
@@ -145,14 +145,14 @@ class S5SlideShow
                 foreach ($frags as $frag)
                     $slide['pages'][] = array(
                         'content' => $frag,
-                        'content_html' => DOMParseUtils::saveChildNodesXML($frag, $document),
+                        'content_html' => DOMParseUtils::saveChildNodesXML($frag),
                     );
             }
             else
             {
                 $slide['pages'] = array(array(
                     'content' => $slide['content'],
-                    'content_html' => DOMParseUtils::saveChildNodesXML($slide['content'], $document),
+                    'content_html' => DOMParseUtils::saveChildNodesXML($slide['content']),
                 ));
             }
         }
