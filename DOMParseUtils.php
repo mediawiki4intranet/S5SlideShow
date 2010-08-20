@@ -16,9 +16,9 @@ class DOMParseUtils
         $document = $element->ownerDocument;
         if (!$document)
             debug_print_backtrace();
-        $html = mb_strtolower($document->saveXML($element));
+        $html = $document->saveXML($element);
         $re = str_replace('/', '\\/', $is_regexp ? "(?:$mark)" : preg_quote($mark));
-        if (preg_match("/^\s*((?:<[^<>]*>\s*)*)$re/is", $html, $m, PREG_OFFSET_CAPTURE))
+        if (preg_match("/^\s*((?:<[^<>]*>\s*)*)$re/uis", $html, $m, PREG_OFFSET_CAPTURE))
         {
             $new = $m[1][0] . substr($html, strlen($m[0][0]));
             array_splice($m, 0, 2);
