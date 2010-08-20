@@ -23,7 +23,7 @@ class DOMParseUtils
             $new = $m[1][0] . substr($html, strlen($m[0][0]));
             array_splice($m, 0, 2);
         }
-        elseif (preg_match("/$re((?:\s*<[^<>]*>)*)\s*$/is", $html, $m, PREG_OFFSET_CAPTURE))
+        elseif (preg_match("/$re((?:\s*<[^<>]*>)*)\s*$/uis", $html, $m, PREG_OFFSET_CAPTURE))
         {
             $new = substr($html, 0, $m[0][1]) . $m[count($m)-1][0];
             array_shift($m);
