@@ -14,8 +14,6 @@ class DOMParseUtils
     static function checkNode($element, $mark, $is_regexp = false)
     {
         $document = $element->ownerDocument;
-        if (!$document)
-            debug_print_backtrace();
         $html = $document->saveXML($element);
         $re = str_replace('/', '\\/', $is_regexp ? "(?:$mark)" : preg_quote($mark));
         if (preg_match("/^\s*((?:<[^<>]*>\s*)*)$re/uis", $html, $m, PREG_OFFSET_CAPTURE))
@@ -161,22 +159,23 @@ class DOMParseUtils
                 /* If sub-element itself contains matching sections, exclude it from output */
                 $subinc = !$section0 && !$sect && !count($sections) && $include_section0;
                 $subslides = self::getSections($child, $headingmark, $is_regexp, $nodenames, $subinc);
+                if ($subinc)
+                {
+                    $s0 = array_shift($subslides);
+                    if ($subslides)
+                        $section0 = $s0['content'];
+                }
                 if ($subslides)
                 {
                     if ($sect)
                         $sections[] = $sect;
                     $sect = NULL;
-                    if ($subinc)
-                    {
-                        $section0 = array_shift($subslides);
-                        $section0 = $section0['content'];
-                    }
                     $sections = array_merge($sections, $subslides);
                     continue;
                 }
             }
             /* Append $child to the last section */
-            if ($child->nodeType != XML_TEXT_NODE || !preg_match('/^\s*$/s', $child->nodeValue))
+            if ($child->nodeType != XML_TEXT_NODE || trim($child->nodeValue))
             {
                 if ($sect)
                     $sect['content']->appendChild($child->cloneNode(true));
