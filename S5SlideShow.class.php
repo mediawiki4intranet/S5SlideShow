@@ -136,7 +136,7 @@ class S5SlideShow
                 $slide['title'] = $new_node;
                 $slide['incremental'] = true;
             }
-            $slide['title_html'] = DOMParseUtils::saveChildNodesXML($slide['title']);
+            $slide['title_html'] = DOMParseUtils::saveChildren($slide['title']);
             /* optionally break slide into pages */
             if ($this->pagebreak)
             {
@@ -145,14 +145,14 @@ class S5SlideShow
                 foreach ($frags as $frag)
                     $slide['pages'][] = array(
                         'content' => $frag,
-                        'content_html' => DOMParseUtils::saveChildNodesXML($frag),
+                        'content_html' => DOMParseUtils::saveChildren($frag),
                     );
             }
             else
             {
                 $slide['pages'] = array(array(
                     'content' => $slide['content'],
-                    'content_html' => DOMParseUtils::saveChildNodesXML($slide['content']),
+                    'content_html' => DOMParseUtils::saveChildren($slide['content']),
                 ));
             }
         }

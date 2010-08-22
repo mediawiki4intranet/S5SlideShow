@@ -35,10 +35,12 @@ class DOMParseUtils
     }
 
     /* Export children of $element to an XML string */
-    static function saveChildNodesXML($element)
+    static function saveChildren($element, $trim = false)
     {
-        $xml = $element->ownerDocument->saveXML($element, LIBXML_NOEMPTYTAG);
-        $xml = preg_replace('/^\s*<[^>]*>(.*?)<\/[^\>]*>\s*$/is', '\1', $xml);
+        if ($trim)
+            $element = self::trimDOM($element);
+        $xml = $element->ownerDocument->saveXML($element);
+        $xml = preg_replace('/^\s*<[^>]*>(.*?)<\/[^\>]*>\s*$/uis', '\1', $xml);
         return $xml;
     }
 
@@ -51,7 +53,12 @@ class DOMParseUtils
             if ($e->nodeType == XML_TEXT_NODE && !trim($e->nodeValue))
                 $element->removeChild($e);
         if ($element->childNodes->length == 1)
-            return self::trimDOM($element->childNodes->item(0));
+        {
+            $e = $element->childNodes->item(0);
+            if ($e->nodeName == 'p' || $e->nodeName == 'li' ||
+                $e->nodeName == 'div' || $e->nodeName == 'span')
+                return self::trimDOM($e);
+        }
         return $element;
     }
 
