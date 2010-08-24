@@ -53,35 +53,37 @@ if (!$egS5SlideTemplateFile)
 
 /* Extension setup */
 
-$wgExtensionFunctions[] = 'S5SlideShow_Setup';
-$wgHooks['UnknownAction'][] = 'S5SlideShow_UnknownAction';
+$wgExtensionFunctions[] = 'S5SlideShowHooks::Setup';
+$wgHooks['UnknownAction'][] = 'S5SlideShowHooks::UnknownAction';
 $wgAutoloadClasses['S5SlideShow'] = dirname(__FILE__).'/S5SlideShow.class.php';
 
-function S5SlideShow_Setup()
+class S5SlideShowHooks
 {
-    global $wgParser;
-    $wgParser->setHook('slide', 'S5SlideShow::slide');
-}
-
-function S5SlideShow_UnknownAction($action, $article)
-{
-    if ($action == 'slide')
+    static function Setup()
     {
-        $title = $article->getTitle();
-        if (method_exists($title, 'userCanReadEx') && !$title->userCanReadEx())
-            return true;
-        global $wgRequest;
-        $content = $wgRequest->getVal('wpTextbox1');
-        if (!$content)
-        {
-            $content = $_SESSION['wpTextbox1'];
-            unset($_SESSION['wpTextbox1']);
-        }
-        $slideShow = new S5SlideShow($title, $content);
-        if ($style = trim($wgRequest->getText('s5style')))
-            $slideShow->style = $style;
-        $slideShow->genSlideFile();
-        return false;
+        global $wgParser;
+        $wgParser->setHook('slide', 'S5SlideShow::slide');
     }
-    return true;
+    static function UnknownAction($action, $article)
+    {
+        if ($action == 'slide')
+        {
+            $title = $article->getTitle();
+            if (method_exists($title, 'userCanReadEx') && !$title->userCanReadEx())
+                return true;
+            global $wgRequest;
+            $content = $wgRequest->getVal('wpTextbox1');
+            if (!$content)
+            {
+                $content = $_SESSION['wpTextbox1'];
+                unset($_SESSION['wpTextbox1']);
+            }
+            $slideShow = new S5SlideShow($title, $content);
+            if ($style = trim($wgRequest->getText('s5style')))
+                $slideShow->style = $style;
+            $slideShow->genSlideFile();
+            return false;
+        }
+        return true;
+    }
 }

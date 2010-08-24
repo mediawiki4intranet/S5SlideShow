@@ -92,10 +92,11 @@ class S5SlideShow
         if (!array_key_exists('footer', $attr))
             $attr['footer'] = $attr['title'];
         /* Author and date in the subfooter by default */
+        $timeanddate = $wgContLang->timeanddate($this->sArticle->getTimestamp(), true);
         if (!array_key_exists('subfooter', $attr))
-            $attr['subfooter'] = $attr['author'] . ', ' . $wgContLang->timeanddate($this->sArticle->getTimestamp(), true);
+            $attr['subfooter'] = $attr['author'] . ', ' . $timeanddate;
         else
-            $attr['subfooter'] = str_ireplace('{{date}}', $wgContLang->timeanddate($this->sArticle->getTimestamp(), true), $attr['subfooter']);
+            $attr['subfooter'] = str_ireplace('{{date}}', $timeanddate, $attr['subfooter']);
         /* Default heading mark = $egS5SlideHeadingMark */
         $attr['headingmark'] = trim($attr['headingmark']);
         if (!$attr['headingmark'])
@@ -118,7 +119,8 @@ class S5SlideShow
         $attr['scaled'] = strtolower(trim($attr['scaled']));
         $attr['scaled'] = $attr['scaled'] == 'true' || $attr['scaled'] == 'yes' || $attr['scaled'] == 1;
         /* Extract values into $this */
-        foreach(split(' ', 'style title subtitle author footer subfooter headingmark incmark pagebreak scaled addcss') as $v)
+        $k = 'style title subtitle author footer subfooter headingmark incmark pagebreak scaled addcss';
+        foreach(explode(' ', $k) as $v)
             $this->$v = $attr[$v];
     }
 
@@ -175,7 +177,10 @@ class S5SlideShow
         }
         $this->slideParser->mShowToc = false;
         $text = str_replace("__TOC__", '', trim($text));
-        $output = $this->slideParser->parse("$text __NOTOC__ __NOEDITSECTION__", $this->sTitle, $this->parserOptions, !$inline, false);
+        $output = $this->slideParser->parse(
+            "$text __NOTOC__ __NOEDITSECTION__", $this->sTitle,
+            $this->parserOptions, !$inline, false
+        );
         return $output->getText();
     }
 
@@ -207,14 +212,15 @@ class S5SlideShow
                     $slideContent = str_replace('<ul>', '<ul class="anim">', $slideContent);
                     $slideContent = str_replace('<ol>', '<ol class="anim">', $slideContent);
                 }
+                $slideContent = "<div class=\"slidecontent\">$slideContent</div>";
                 if ($title)
                 {
                     if ($sc > 1)
                         $title .= " (".($i+1)."/$sc)";
-                    $fc .= "<div class=\"slide\"><h1>$title</h1><div class=\"slidecontent\">$slideContent</div></div>\n";
+                    $fc .= "<div class=\"slide\"><h1>$title</h1>$slideContent</div>\n";
                 }
                 else
-                    $fc .= "<div class=\"slide notitle\"><div class=\"slidecontent\">$slideContent</div></div>\n";
+                    $fc .= "<div class=\"slide notitle\">$slideContent</div>\n";
             }
         }
 
@@ -263,14 +269,18 @@ class S5SlideShow
         $attr['content'] = $content;
         $slideShow = new S5SlideShow($title, NULL, $attr);
         $url = $title->escapeLocalURL("action=slide");
+        $stylepreview = $wgScriptPath."/extensions/S5SlideShow/".$slideShow->style."/preview.png";
         return "<div class=\"floatright\"><span>
 <a href=\"$url\" class=\"image\" title=\"Slide Show\" target=\"_blank\">
-<img src=\"$wgScriptPath/extensions/S5SlideShow/".$slideShow->style."/preview.png\" alt=\"Slide Show\" width=\"240px\" /><br />
+<img src=\"$stylepreview\" alt=\"Slide Show\" width=\"240px\" /><br />
 Slide Show</a></span></div>" . $wgParser->parse($content, $title, $wgParser->mOptions, false, false)->getText();
     }
 
     /* Empty parser hook for <slide> */
-    static function fakeSlide() { return ''; }
+    static function fakeSlide()
+    {
+        return '';
+    }
 
     /* Check whether $haystack begins or ends with $needle, and if yes,
        remove $needle from it and return true. */
@@ -279,7 +289,7 @@ Slide Show</a></span></div>" . $wgParser->parse($content, $title, $wgParser->mOp
         $needle = mb_strtolower($needle);
         if (mb_strtolower(mb_substr($haystack, 0, mb_strlen($needle))) == $needle)
             $haystack = trim(mb_substr($haystack, mb_strlen($needle)));
-        else if (mb_strtolower(mb_substr($haystack, -mb_strlen($needle))) == $needle)
+        elseif (mb_strtolower(mb_substr($haystack, -mb_strlen($needle))) == $needle)
             $haystack = trim(mb_substr($haystack, 0, -mb_strlen($needle)));
         else
             return false;

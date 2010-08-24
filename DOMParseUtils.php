@@ -30,7 +30,9 @@ class DOMParseUtils
         else
             return false;
         $new_document = self::loadDOM($new);
-        $new_element = $document->importNode($new_document->documentElement->childNodes->item(0)->childNodes->item(0), true);
+        /* html.body.firstChild */
+        $new_element = $new_document->documentElement->childNodes->item(0)->childNodes->item(0);
+        $new_element = $document->importNode($new_element, true);
         return array($new_element, $m);
     }
 
@@ -73,7 +75,7 @@ class DOMParseUtils
                 $parts = self::splitDOM($child, $document, $mark);
             elseif ($child->nodeType == XML_TEXT_NODE)
             {
-                $txt = preg_split('/'.str_replace('/','\\/',preg_quote($mark)).'/is', $child->nodeValue);
+                $txt = preg_split('/'.str_replace('/', '\\/', preg_quote($mark)).'/is', $child->nodeValue);
                 if (count($txt) > 1)
                     foreach ($txt as $t)
                         $parts[] = $document->createTextNode($t);
@@ -111,7 +113,8 @@ class DOMParseUtils
            'content' => DOMElement <section_content>,
        ), ...)
     */
-    static function getSections($element, $headingmark = false, $is_regexp = false, $nodenames = NULL, $include_section0 = false)
+    static function getSections($element, $headingmark = false, $is_regexp = false,
+                                $nodenames = NULL, $include_section0 = false)
     {
         if (!$element->childNodes->length)
             return NULL;
