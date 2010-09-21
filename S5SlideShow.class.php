@@ -58,7 +58,8 @@ class S5SlideShow
             global $wgUser;
             $parser = new Parser;
             $parser->setHook('slide', array($this, 'slide_for_args'));
-            $parser->parse($this->mPageContent, $this->sTitle, ParserOptions::newFromUser($wgUser));
+            $opt = ParserOptions::newFromUser($wgUser);
+            $parser->parse($this->mPageContent, $this->sTitle, $opt);
         }
         else
             $this->setAttributes($attr);
@@ -92,11 +93,10 @@ class S5SlideShow
         if (!array_key_exists('footer', $attr))
             $attr['footer'] = $attr['title'];
         /* Author and date in the subfooter by default */
-        $timeanddate = $wgContLang->timeanddate($this->sArticle->getTimestamp(), true);
         if (!array_key_exists('subfooter', $attr))
-            $attr['subfooter'] = $attr['author'] . ', ' . $timeanddate;
+            $attr['subfooter'] = $attr['author'] . ', ' . $wgContLang->timeanddate($this->sArticle->getTimestamp(), true);
         else
-            $attr['subfooter'] = str_ireplace('{{date}}', $timeanddate, $attr['subfooter']);
+            $attr['subfooter'] = str_ireplace('{{date}}', $wgContLang->timeanddate($this->sArticle->getTimestamp(), true), $attr['subfooter']);
         /* Default heading mark = $egS5SlideHeadingMark */
         $attr['headingmark'] = trim($attr['headingmark']);
         if (!$attr['headingmark'])
@@ -119,8 +119,7 @@ class S5SlideShow
         $attr['scaled'] = strtolower(trim($attr['scaled']));
         $attr['scaled'] = $attr['scaled'] == 'true' || $attr['scaled'] == 'yes' || $attr['scaled'] == 1;
         /* Extract values into $this */
-        $k = 'style title subtitle author footer subfooter headingmark incmark pagebreak scaled addcss';
-        foreach(explode(' ', $k) as $v)
+        foreach(split(' ', 'style title subtitle author footer subfooter headingmark incmark pagebreak scaled addcss') as $v)
             $this->$v = $attr[$v];
     }
 
@@ -213,7 +212,7 @@ class S5SlideShow
                     $slideContent = str_replace('<ol>', '<ol class="anim">', $slideContent);
                 }
                 $slideContent = "<div class=\"slidecontent\">$slideContent</div>";
-                if ($title)
+                if (trim(strip_tags($title)))
                 {
                     if ($sc > 1)
                         $title .= " (".($i+1)."/$sc)";

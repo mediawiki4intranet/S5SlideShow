@@ -10,7 +10,7 @@ sup {font-size: smaller; line-height: 1px;}
 
 .slide code {padding: 2px 0.25em; font-weight: bold;}
 .slide ul {margin-left: 5%; margin-right: 7%; list-style: disc;}
-.slide li {margin-top: 0.75em; margin-right: 0;}
+.slide li {margin-top: 0.75em; margin-right: 0; line-height: 1.2em;}
 .slide ul ul {line-height: 1;}
 .slide ul ul li {margin: .2em; font-size: 85%; list-style: square;}
 .slide img.leader {display: block; margin: 0 auto;}

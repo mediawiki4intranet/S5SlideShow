@@ -43,6 +43,7 @@ class DOMParseUtils
             $element = self::trimDOM($element);
         $xml = $element->ownerDocument->saveXML($element);
         $xml = preg_replace('/^\s*<[^>]*>(.*?)<\/[^\>]*>\s*$/uis', '\1', $xml);
+        $xml = preg_replace('#(<(iframe|a)(\s+[^<>]+)?)/\s*>#', '\1></\2>', $xml);
         return $xml;
     }
 
