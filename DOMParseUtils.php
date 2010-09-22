@@ -41,9 +41,9 @@ class DOMParseUtils
     {
         if ($trim)
             $element = self::trimDOM($element);
-        $xml = $element->ownerDocument->saveXML($element);
+        $xml = $element->ownerDocument->saveXML($element, LIBXML_NOEMPTYTAG);
         $xml = preg_replace('/^\s*<[^>]*>(.*?)<\/[^\>]*>\s*$/uis', '\1', $xml);
-        $xml = preg_replace('#(<(iframe|a)(\s+[^<>]+)?)/\s*>#', '\1></\2>', $xml);
+        $xml = preg_replace('#(<(br|input)(\s+[^<>]*[^/])?)></\2>#', '\1 />', $xml);
         return $xml;
     }
 
