@@ -134,7 +134,7 @@ class S5SlideShow
             /* check for incremental mark */
             if ($this->incmark && ($new_node = DOMParseUtils::checkNode($slide['title'], $this->incmark)))
             {
-                $slide['title'] = $new_node;
+                $slide['title'] = $new_node[0];
                 $slide['incremental'] = true;
             }
             $slide['title_html'] = DOMParseUtils::saveChildren($slide['title']);
