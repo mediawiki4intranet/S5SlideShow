@@ -129,6 +129,8 @@ class S5SlideShow
         $html = $this->parse($content);
         $document = DOMParseUtils::loadDOM($html);
         $slides = DOMParseUtils::getSections($document->documentElement, $this->headingmark);
+        if (!$slides)
+            return array();
         foreach ($slides as &$slide)
         {
             /* check for incremental mark */
