@@ -140,6 +140,10 @@ function currentSlide() {
 
 function go(step) {
 	if (document.getElementById('slideProj').disabled || step == 0) return;
+	if (s5ScaleEachSlide) {
+		fontSize('24px');
+		lastfontsize = 24;
+	}
 	var jl = document.getElementById('jumplist');
 	var cid = 'slide' + snum;
 	var ce = document.getElementById(cid);
