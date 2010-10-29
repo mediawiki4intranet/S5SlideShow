@@ -10,11 +10,12 @@ sup {font-size: smaller; line-height: 1px;}
 
 .slide code {padding: 2px 0.25em; font-weight: bold;}
 .slide ul {margin-left: 5%; margin-right: 7%; list-style: disc;}
-.slide li {margin-top: 0.75em; margin-right: 0; line-height: 1.2em;}
-.slide ul ul {line-height: 1;}
+.slide li {margin-top: 0.75em; margin-right: 0; line-height: 1.2em; padding-left:1%;}
+.slide ul ul {line-height: 1;margin-left: 2%;}
 .slide ul ul li {margin: .2em; font-size: 85%; list-style: square;}
 .slide img.leader {display: block; margin: 0 auto;}
 .slide table ul {margin-left: 1em;}
+.slide dd {margin-left: 6%;}
 
 div#footer {font-size: 20pt; font-weight: bold; padding: 1em 0;}
 #footer h1, #footer h2 {display: block; padding: 0 1em;}
