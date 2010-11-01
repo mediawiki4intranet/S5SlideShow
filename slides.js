@@ -454,8 +454,9 @@ function createControls() {
 }
 
 var lastfontsize = 40;
-function fontScale() {
+function fontScale(forceno) {
 	if (!s5mode) return false;
+	if (forceno === undefined) forceno = 10;
 	if (window.innerHeight) {
 		var vSize = window.innerHeight;
 		var hSize = window.innerWidth;
@@ -469,26 +470,42 @@ function fontScale() {
 		var vSize = 700;  // assuming 1024x768, minus chrome and such
 		var hSize = 1024; // these do not account for kiosk mode or Opera Show
 	}
+	vSize -= 32;
 	var newSize;
-	if (s5ScaleEachSlide && snum > 0)
-	{
-		// <vfilippov@custis.ru> Experimental font scaling for each slide independently
-		var s = document.getElementById('slide'+snum);
-		var docw, doch = s.scrollHeight;
-		if (s.childNodes.length > 1)
-			docw = s.childNodes[1].scrollWidth;
-		else
-			docw = s.childNodes[0].scrollWidth;
-		newSize = Math.round(Math.min(lastfontsize/doch*vSize, lastfontsize/docw*hSize));
-	}
-	else
+	if (!s5ScaleEachSlide || snum == 0)
 	{
 		var vScale = 48;  // both yield 16 (the usual browser default) at 1024x768
 		var hScale = 64;  // perhaps should auto-calculate based on theme's declared value?
 		newSize = Math.min(Math.round(vSize/vScale),Math.round(hSize/hScale));
+		fontSize(newSize + 'px');
+		reflowHack();
 	}
-	fontSize(newSize + 'px');
-	lastfontsize = newSize;
+	else
+	{
+		var /*docw, */doch;
+		// <vfilippov@custis.ru> Experimental font scaling for each slide independently
+		var s = document.getElementById('slide'+snum);
+		var sumW = 0, sumN = 0;
+		for (var i = 0; i < 10; i++)
+		{
+			doch = s.scrollHeight;
+			if (doch/vSize >= 0.9 && doch/vSize < 1.05)
+				break;
+/*			if (s.childNodes.length > 1)
+				docw = s.childNodes[1].scrollWidth;
+			else
+				docw = s.childNodes[0].scrollWidth;*/
+			newSize = /*Math.min(*/lastfontsize/doch*vSize/*, lastfontsize/docw*hSize)*/;
+			sumW += newSize;
+			sumN++;
+			lastfontsize = Math.round(sumW*100/sumN)/100;
+			fontSize(lastfontsize + 'px');
+			reflowHack();
+		}
+	}
+}
+
+function reflowHack() {
 	if (isGe) {  // hack to counter incremental reflow bugs
 		var obj = document.getElementsByTagName('body')[0];
 		obj.style.display = 'none';
