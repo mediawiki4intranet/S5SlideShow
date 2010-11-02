@@ -208,7 +208,7 @@ class S5SlideShow
                 $title = $slide['title_html'];
                 $slideContent = $page['content_html'];
                 /* make slide lists incremental if needed */
-                if ($slide['inc'])
+                if ($slide['incremental'])
                 {
                     $slideContent = str_replace('<ul>', '<ul class="anim">', $slideContent);
                     $slideContent = str_replace('<ol>', '<ol class="anim">', $slideContent);
