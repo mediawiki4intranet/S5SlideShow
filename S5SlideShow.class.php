@@ -94,9 +94,18 @@ class S5SlideShow
             $attr['footer'] = $attr['title'];
         /* Author and date in the subfooter by default */
         if (!array_key_exists('subfooter', $attr))
-            $attr['subfooter'] = $attr['author'] . ', ' . $wgContLang->timeanddate($this->sArticle->getTimestamp(), true);
+        {
+            $attr['subfooter'] = $attr['author'] . ', ' .
+                $wgContLang->timeanddate($this->sArticle->getTimestamp(), true);
+        }
         else
-            $attr['subfooter'] = str_ireplace('{{date}}', $wgContLang->timeanddate($this->sArticle->getTimestamp(), true), $attr['subfooter']);
+        {
+            $attr['subfooter'] = str_ireplace(
+                '{{date}}',
+                $wgContLang->timeanddate($this->sArticle->getTimestamp(), true),
+                $attr['subfooter']
+            );
+        }
         /* Default heading mark = $egS5SlideHeadingMark */
         $attr['headingmark'] = trim($attr['headingmark']);
         if (!$attr['headingmark'])
@@ -119,7 +128,8 @@ class S5SlideShow
         $attr['scaled'] = strtolower(trim($attr['scaled']));
         $attr['scaled'] = $attr['scaled'] == 'true' || $attr['scaled'] == 'yes' || $attr['scaled'] == 1;
         /* Extract values into $this */
-        foreach(split(' ', 'style title subtitle author footer subfooter headingmark incmark pagebreak scaled addcss') as $v)
+        $fields = 'style title subtitle author footer subfooter headingmark incmark pagebreak scaled addcss';
+        foreach(split(' ', $fields) as $v)
             $this->$v = $attr[$v];
     }
 
