@@ -36,7 +36,7 @@ class DOMParseUtils
         return array($new_element, $m);
     }
 
-    /* Export children of $element to an XML string */
+    /* Export children of $element to an HTML string */
     static function saveChildren($element, $trim = false)
     {
         if ($trim)
