@@ -1,6 +1,6 @@
 <?php
 
-# Copyright (C) 2010 Vitaliy Filippov <vitalif@mail.ru>
+# Copyright (C) 2010+ Vitaliy Filippov <vitalif@mail.ru>
 # Based on (C) 2005 TooooOld <tianshuen@gmail.com>, but heavily modified
 # http://meta.wikimedia.org/wiki/User:BR/use_S5_slide_system_in_the_mediawiki/en
 #
@@ -195,7 +195,7 @@ class S5SlideShow
         return $output->getText();
     }
 
-    /* Generate output presentation */
+    /* Generate presentation HTML code */
     function genSlideFile()
     {
         global $egS5SlideTemplateFile;
@@ -259,6 +259,47 @@ class S5SlideShow
         echo $fileContent;
     }
 
+    /* Function to replace URLs in S5 skin stylesheet
+     * $m is the match array coming from preg_replace_callback
+     */
+    static function styleReplaceUrl($skin, $m)
+    {
+        $t = Title::newFromText("S5/$skin/".$m[1], NS_FILE);
+        $f = wfLocalFile($t);
+        if ($f->exists())
+            return 'url('.$f->getFullUrl().')';
+        // FIXME remove hardcode extensions/S5SlideShow/
+        // Replace images with invalid names with blank.gif
+        if (preg_match('/[^a-z0-9_\-\.]/is', $m[1]))
+            return 'url(extensions/S5SlideShow/blank.gif)';
+        return "url(extensions/S5SlideShow/$skin/".$m[1].')';
+    }
+
+    /* Generate CSS stylesheet for a given S5 skin */
+    // TODO cache generated stylesheets and flush the cache after saving style articles
+    static function genStyle($skin)
+    {
+        global $wgOut;
+        $dir = dirname(__FILE__);
+        $css = '';
+        foreach (S5SlideShowHooks::$styles as $k => $file)
+        {
+            $title = Title::newFromText("S5/$skin/$k", NS_MEDIAWIKI);
+            if ($title->exists())
+            {
+                $a = new Article($title);
+                $c = $a->getContent();
+            }
+            else
+                $c = @file_get_contents("$dir/".str_replace('$skin', $skin, $file));
+            $c = preg_replace_callback('#url\(([^\)]*)\)#is', create_function('$m', 'return S5SlideShow::styleReplaceUrl("'.$skin.'", $m);'), $c);
+            $css .= $c;
+        }
+        $wgOut->disable();
+        header("Content-Type: text/css");
+        echo $css;
+    }
+
     /* Hook function to extract arguments from article content */
     function slide_for_args($content, $attr, $parser)
     {
@@ -305,5 +346,56 @@ Slide Show</a></span></div>" . $wgParser->parse($content, $title, $wgParser->mOp
         else
             return false;
         return true;
+    }
+}
+
+// Used to display CSS files instead of unexisting special articles (MediaWiki:S5/<skin>/<stylesheet>)
+class S5SkinArticle extends Article
+{
+    var $s5skin, $s5file;
+    // Create the object and remember s5skin and s5file
+    public function __construct($title, $s5skin, $s5file)
+    {
+        $this->mTitle = &$title;
+        $this->mOldId = NULL;
+        $this->s5skin = $s5skin;
+        $this->s5file = $s5file;
+    }
+    // Get content from the file
+    public function getContent()
+    {
+        if ($this->getID() == 0)
+            $this->mContent = @file_get_contents($this->s5file);
+        else
+            $this->loadContent();
+        return $this->mContent;
+    }
+    // Show default content from the file
+    public function showMissingArticle()
+    {
+        global $wgOut, $wgRequest, $wgParser;
+        // Copy-paste from includes/Article.php:
+        // Show delete and move logs
+        LogEventsList::showLogExtract( $wgOut, array( 'delete', 'move' ), $this->mTitle->getPrefixedText(), '',
+            array(  'lim' => 10,
+                'conds' => array( "log_action != 'revision'" ),
+                'showIfEmpty' => false,
+                'msgKey' => array( 'moveddeleted-notice' ) )
+        );
+        // Show error message
+        $oldid = $this->getOldID();
+        if ($oldid)
+        {
+            $text = wfMsgNoTrans(
+                'missing-article', $this->mTitle->getPrefixedText(),
+                wfMsgNoTrans('missingarticle-rev', $oldid)
+            );
+        }
+        else
+            $text = $this->getContent();
+        if ($wgParser->mTagHooks['source'])
+            $text = "<source lang='css'>\n$text\n</source>";
+        $text = "<div class='noarticletext'>\n$text\n</div>";
+        $wgOut->addWikiText($text);
     }
 }

@@ -1,13 +1,8 @@
-/*
-** MediaWiki 'monobook' style sheet for CSS2-capable browsers.
-** Copyright Gabriel Wicke - http://wikidev.net/
-** License: GPL (http://www.gnu.org/copyleft/gpl.html)
-**
-** Loosely based on http://www.positioniseverything.net/ordered-floats.html by Big John
-** and the Plone 2.0 styles, see http://plone.org/ (Alexander Limi,Joe Geldart & Tom Croucher,
-** Michael Zeltner and Geir B?kholt)
-** All you guys rock :)
-*/
+/**
+ * MediaWiki 'monobook' CSS2 style sheet adapted for S5 usage
+ * Based on the original MonoBook style by Gabriel Wicke - http://wikidev.net/
+ * License: GPL (http://www.gnu.org/copyleft/gpl.html)
+ */
 
 body {
     font: x-small sans-serif;
@@ -41,11 +36,9 @@ a:visited { color: #5a3696; }
 a:active { color: #ffa500; }
 a:hover { text-decoration: underline; }
 a.stub { color: #772233; }
+
 a.new,
-
 a.new:visited,
-
-
 img {
     border: none;
     vertical-align: middle;
@@ -115,7 +108,6 @@ textarea {
     width: 100%;
     padding: 0.1em;
 }
-
 
 input.historysubmit {
     padding: 0 0.3em 0.3em 0.3em !important;
@@ -345,7 +337,6 @@ div.townBox dl dd {
 /* Page history styling */
 /* the auto-generated edit comments */
 
-
 /*
 ** keep the whitespace in front of the ^=, hides rule from konqueror
 ** this is css3, the validator doesn't like it when validating as css2
@@ -393,15 +384,11 @@ special external link styling */
 ** general portlet styles (elements in the quickbar)
 */
 
-
-
-
 div.prefsectiontip {
     font-size: 95%;
     margin-top: 1em;
 }
 fieldset.operaprefsection { margin-left: 15em }
-
 
 .redirectText {
 	font-size:150%;

@@ -1,0 +1,3 @@
+// FIXME remove hardcode extensions/S5SlideShow/
+// TODO cache generated stylesheets and flush the cache after saving style articles
+// TODO remove support for loading text from session object and replace it by support for save-staying-in-edit-mode extension

@@ -3,6 +3,7 @@
 // Please see http://www.meyerweb.com/eric/tools/s5/credits.html for information 
 // about all the wonderful and talented contributors to this code!
 
+// Tuned by Vitaliy Filippov (http://wiki.4intra.net/)
 // Config:
 // window.s5ScaleEachSlide = true|false;
 // window.slideshowId = anything;
