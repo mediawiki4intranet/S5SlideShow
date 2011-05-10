@@ -264,7 +264,7 @@ class S5SlideShow
      */
     static function styleReplaceUrl($skin, $m)
     {
-        $t = Title::newFromText("S5/$skin/".$m[1], NS_FILE);
+        $t = Title::newFromText($m[1], NS_FILE);
         $f = wfLocalFile($t);
         if ($f->exists())
             return 'url('.$f->getFullUrl().')';
