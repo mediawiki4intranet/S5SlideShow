@@ -10,15 +10,14 @@ body {background: #FFF url(textbook.png) -16px 0 repeat fixed; color: #000; font
 .slide code.bad, code del {color: red;}
 .slide code.old {color: silver;}
 
-div#header, div#footer {color: #AAB;
-  font-family: Verdana, Helvetica, sans-serif;}
+div#header, div#footer {color: #AAB;font-family: sans-serif;}
 div#header {background: url(custis.png) 98% 50% no-repeat; height: 20%;
   line-height: 1px; }
 
-.slide h1 {position: relative; z-index: 1;
+.slide h1.stitle {position: relative; z-index: 1;
   margin: -2em 0 0.5em 0; padding: 0.3em 0 0 50px;
   width: 80%;
-  font: bold 150%/1em Helvetica, sans-serif;}
+  font: bold 150%/1em sans-serif;}
 .slide h3 {font-size: 130%;}
 
 div#controls {left: 60%; width: 40%;}

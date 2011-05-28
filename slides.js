@@ -4,9 +4,9 @@
 // about all the wonderful and talented contributors to this code!
 
 // Tuned by Vitaliy Filippov (http://wiki.4intra.net/)
-// Config:
-// window.s5ScaleEachSlide = true|false;
-// window.slideshowId = anything;
+// 1) Per-slide scaling mode, activated by setting window.s5ScaleEachSlide = true;
+// 2) Save/restore of current position in cookies (upon "Reload" clicks),
+//    activated by setting window.slideshowId = <string>;
 
 var undef;
 var slideCSS = '';
@@ -142,7 +142,7 @@ function currentSlide() {
 function go(step) {
 	if (document.getElementById('slideProj').disabled || step == 0) return;
 	if (s5ScaleEachSlide) {
-		fontSize('24px');
+		setFontSize('body', '24px');
 		lastfontsize = 24;
 	}
 	var jl = document.getElementById('jumplist');
@@ -233,7 +233,7 @@ function toggle() {
 		slides.disabled = true;
 		outline.disabled = false;
 		s5mode = false;
-		fontSize('1em');
+		setFontSize('body', '1em');
 		for (var n = 0; n < smax; n++) {
 			var slide = slideColl[n];
 			slide.style.visibility = 'visible';
@@ -454,10 +454,12 @@ function createControls() {
 	addClass(hidden,'hideme');
 }
 
+// "fontScale" name resides from history
+// really it supports content scaling by now
 var lastfontsize = 40;
-function fontScale(forceno) {
+function fontScale()
+{
 	if (!s5mode) return false;
-	if (forceno === undefined) forceno = 10;
 	if (window.innerHeight) {
 		var vSize = window.innerHeight;
 		var hSize = window.innerWidth;
@@ -473,64 +475,16 @@ function fontScale(forceno) {
 	}
 	vSize -= 32;
 	var newSize;
-	if (!s5ScaleEachSlide || snum == 0)
+	if (!s5ScaleEachSlide)
 	{
 		var vScale = 48;  // both yield 16 (the usual browser default) at 1024x768
 		var hScale = 64;  // perhaps should auto-calculate based on theme's declared value?
 		newSize = Math.min(Math.round(vSize/vScale),Math.round(hSize/hScale));
-		fontSize(newSize + 'px');
+		setFontSize('body', newSize + 'px');
 		reflowHack();
 	}
 	else
-	{
-		var /*docw, */doch;
-		// <vfilippov@custis.ru> Experimental font scaling for each slide independently
-		var s = document.getElementById('slide'+snum);
-		var sumW = 0, sumN = 0;
-		for (var i = 0; i < 10; i++)
-		{
-			doch = s.scrollHeight;
-			if (doch/vSize >= 0.9 && doch/vSize < 1.05)
-				break;
-/*			if (s.childNodes.length > 1)
-				docw = s.childNodes[1].scrollWidth;
-			else
-				docw = s.childNodes[0].scrollWidth;*/
-			newSize = /*Math.min(*/lastfontsize/doch*vSize/*, lastfontsize/docw*hSize)*/;
-			sumW += newSize;
-			sumN++;
-			lastfontsize = Math.round(sumW*100/sumN)/100;
-			fontSize(lastfontsize + 'px');
-			reflowHack();
-		}
-	}
-}
-
-function reflowHack() {
-	if (isGe) {  // hack to counter incremental reflow bugs
-		var obj = document.getElementsByTagName('body')[0];
-		obj.style.display = 'none';
-		obj.style.display = 'block';
-	}
-}
-
-function fontSize(value) {
-	if (!(s5ss = document.getElementById('s5ss'))) {
-		if (!document.createStyleSheet) {
-			document.getElementsByTagName('head')[0].appendChild(s5ss = document.createElement('style'));
-			s5ss.setAttribute('media','screen, projection');
-			s5ss.setAttribute('id','s5ss');
-		} else {
-			document.createStyleSheet();
-			document.s5ss = document.styleSheets[document.styleSheets.length - 1];
-		}
-	}
-	if (!(document.s5ss && document.s5ss.addRule)) {
-		while (s5ss.lastChild) s5ss.removeChild(s5ss.lastChild);
-		s5ss.appendChild(document.createTextNode('html {font-size: ' + value + ' !important;}'));
-	} else {
-		document.s5ss.addRule('html','font-size: ' + value + ' !important;');
-	}
+		contentScale(document.getElementById('slide'+snum), hSize, vSize, 40);
 }
 
 function notOperaFix() {
@@ -865,9 +819,9 @@ function startup() {
 	loadNote();
 	fixLinks();
 	externalLinks();
-	fontScale();
 	if (!isOp) notOperaFix();
 	slideJump();
+	fontScale();
 	if (defaultView == 'outline') {
 		toggle();
 	}
