@@ -11,7 +11,7 @@ body {background: #FFF url(textbook.png) -16px 0 repeat fixed; color: #000; font
 .slide code.old {color: silver;}
 
 div#header, div#footer {color: #AAB;font-family: sans-serif;}
-div#header {background: url(custis.png) 98% 50% no-repeat; height: 20%;
+div#header {background: url(custis.png) 98% 50% no-repeat; height: 15%;
   line-height: 1px; }
 
 .slide h1.stitle {position: relative; z-index: 1;

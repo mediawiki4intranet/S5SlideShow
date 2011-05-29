@@ -456,7 +456,7 @@ function createControls() {
 
 // "fontScale" name resides from history
 // really it supports content scaling by now
-var lastfontsize = 40;
+var initialFontSize = 24;
 function fontScale()
 {
 	if (!s5mode) return false;
@@ -484,7 +484,7 @@ function fontScale()
 		reflowHack();
 	}
 	else
-		contentScale(document.getElementById('slide'+snum), hSize, vSize, 40);
+		contentScale(document.getElementById('slide'+snum), hSize, vSize, initialFontSize);
 }
 
 function notOperaFix() {
