@@ -71,10 +71,6 @@ function contentScale(cont, hSize, vSize, initialFontSize)
 		if (t && cont.getElementsByClassName)
 		{
 			is = cont.getElementsByClassName('scaled');
-			cont.style.width = 'auto';
-			reflowHack();
-			if (hSize/cw < aspect)
-				aspect = hSize/cw;
 			for (var j = 0; j < is.length; j++)
 			{
 				img = is[j];
@@ -83,7 +79,6 @@ function contentScale(cont, hSize, vSize, initialFontSize)
 				img.style[t+'ransformOrigin'] = '0 0';
 				img.style[t+'ransform'] = 'scale('+(img.scrollWidth*aspect/img.origWidth)+')';
 			}
-			cont.style.width = '';
 		}
 		reflowHack();
 	}
