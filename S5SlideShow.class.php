@@ -265,6 +265,7 @@ class S5SlideShow
         $this->parserOptions = ParserOptions::newFromUser($wgUser);
         $this->parserOptions->setEditSection(false);
         $this->parserOptions->setNumberHeadings(false);
+        $this->parserOptions->enableLimitReport(false);
         $output = $this->slideParser->parse(" ", $this->sTitle, $this->parserOptions, false, true);
         return $this->slideParser;
     }
@@ -438,7 +439,7 @@ class S5SlideShow
         $html = '';
         foreach ($slides as $slide)
         {
-            $output = $parser->parse($slide, $parser->mTitle, $parser->mOptions, true, false);
+            $output = $parser->parse(trim($slide), $parser->mTitle, $parser->mOptions, true, false);
             $html .= '<div class="slide" id="slide'.(self::$slideno++).'">'.
                 $output->getText().'</div>';
         }
@@ -454,7 +455,7 @@ class S5SlideShow
         else
             $slides = array($content);
         foreach ($slides as $c)
-            $this->slides[] = array('content' => $c) + $attr;
+            $this->slides[] = array('content' => trim($c)) + $attr;
     }
 
     // <slidecss> - article view mode
