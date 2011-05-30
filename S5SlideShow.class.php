@@ -384,9 +384,9 @@ class S5SlideShow
     /**
      * <slideshow> - article view mode, backwards compatibility
      */
-    static function slideshow_legacy($content, $attr, $parser)
+    static function slideshow_legacy($content, $attr, $parser, $frame = NULL)
     {
-        return self::slideshow_view($content, $attr, $parser,
+        return self::slideshow_view($content, $attr, $parser, $frame,
             '<div style="width: 240px; color: red">Warning: legacy &lt;slide&gt;'.
             ' parser hook used, change it to &lt;slideshow&gt; please</div>'
         );
@@ -396,7 +396,7 @@ class S5SlideShow
      * <slideshow> - article view mode
      * displays a link to the slideshow and skin preview
      */
-    static function slideshow_view($content, $attr, $parser, $addmsg = '')
+    static function slideshow_view($content, $attr, $parser, $frame = NULL, $addmsg = '')
     {
         global $wgScriptPath, $wgParser;
         if (!($title = $parser->getTitle()))
