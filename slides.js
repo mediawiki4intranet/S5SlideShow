@@ -143,7 +143,7 @@ function go(step) {
 	if (document.getElementById('slideProj').disabled || step == 0) return;
 	if (s5ScaleEachSlide) {
 		setFontSize('body', '24px');
-		lastfontsize = 24;
+		initialFontSize = 24;
 	}
 	var jl = document.getElementById('jumplist');
 	var cid = 'slide' + snum;
@@ -477,10 +477,11 @@ function fontScale()
 	var newSize;
 	if (!s5ScaleEachSlide)
 	{
-		var vScale = 48;  // both yield 16 (the usual browser default) at 1024x768
-		var hScale = 64;  // perhaps should auto-calculate based on theme's declared value?
+		var vScale = 32;  // both yield 24 at 1024x768
+		var hScale = 42;  // perhaps should auto-calculate based on theme's declared value?
 		newSize = Math.min(Math.round(vSize/vScale),Math.round(hSize/hScale));
 		setFontSize('body', newSize + 'px');
+		initialFontSize = newSize;
 		reflowHack();
 	}
 	else
