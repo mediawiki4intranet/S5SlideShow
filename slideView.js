@@ -5,6 +5,7 @@
 
 (function()
 {
+    window.wgSlideView = true;
     var f = window.wgSlideViewFont||'';
     var w = window.wgSlideViewWidth||200;
     var h = Math.round(w / screen.width * screen.height);

@@ -67,17 +67,36 @@ function contentScale(cont, hSize, vSize, initialFontSize)
 			img.width = w;
 			img.height = h;
 		}
-		// Scale class="scaled" elements using CSS3
+		// Scale class="scaled" elements using CSS3 (VERY EXPERIMENTAL)
 		if (t && cont.getElementsByClassName)
 		{
 			is = cont.getElementsByClassName('scaled');
 			for (var j = 0; j < is.length; j++)
 			{
 				img = is[j];
-				if (!img.origWidth)
-					img.origWidth = img.scrollWidth;
-				img.style[t+'ransformOrigin'] = '0 0';
-				img.style[t+'ransform'] = 'scale('+(img.scrollWidth*aspect/img.origWidth)+')';
+				if (window.wgSlideView)
+				{
+					if (!img.origWidth)
+						img.origWidth = img.scrollWidth;
+					img.style[t+'ransformOrigin'] = '0 0';
+					img.style[t+'ransform'] = 'scale('+(img.scrollWidth*aspect/img.origWidth)+')';
+				}
+				else
+				{
+					var p = img.parentNode;
+					if (p.nodeName != 'DIV' || !p._aspect)
+					{
+						// Wrap element into a scaled <div>
+						p = document.createElement('div');
+						p.style[t+'ransformOrigin'] = '0 0';
+						img.parentNode.insertBefore(p, img);
+						p.appendChild(img);
+					}
+					p._aspect = aspect * (p._aspect || 1);
+					p.style.height = Math.round(img.scrollHeight * p._aspect) + 'px';
+					p.style.width = Math.round(img.scrollWidth * p._aspect) + 'px';
+					p.style[t+'ransform'] = 'scale('+p._aspect+')';
+				}
 			}
 		}
 		reflowHack();
@@ -132,5 +151,5 @@ function s5ss_addRule(target, rule, replace)
 // except for children which have class='scaled': set 'undoValue' for them
 function setFontSize(target, value, undoValue)
 {
-	s5ss_addRule(target, 'font-size: ' + value + ' !important;', true);
+	s5ss_addRule(target, 'font-size: ' + value + ';', true);
 }
