@@ -153,13 +153,14 @@ class S5SlideShow
     function transform_section_slides($content)
     {
         $p = $this->getParser();
+        $content = $p->preprocess($content, $this->sTitle, $this->parserOptions);
         $p->setOutputType(Parser::OT_WIKI);
         $node = $p->getPreprocessor()->preprocessToObj($content);
         $doc = $node->node->ownerDocument;
         $all = $node->node->childNodes;
-        $this->heading_re = '/'.str_replace('/', '\\/', $this->attr['headingmark']).'\s*/';
+        $this->heading_re = '/'.str_replace('/', '\\/', $this->attr['headingmark']).'/';
         if (strlen($this->incmark))
-            $this->inc_re = '/'.str_replace('/', '\\/', $this->attr['incmark']).'\s*/';
+            $this->inc_re = '/'.str_replace('/', '\\/', $this->attr['incmark']).'/';
         for ($i = 0; $i < $all->length; $i++)
         {
             $c = $all->item($i);
