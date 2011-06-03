@@ -471,6 +471,13 @@ class S5SlideShow
         else
             $slides = array($content);
         $html = '';
+        $style = '';
+        if (!$attr['float'])
+            $style .= "float: left; ";
+        if ($attr['width'])
+            $style .= "width: $attr[width]px; ";
+        if ($style)
+            $style = " style='$style'";
         foreach ($slides as $i => $slide)
         {
             if ($attr['title'] && !$i)
@@ -481,9 +488,12 @@ class S5SlideShow
             else
                 $st = 'slide';
             $output = self::clone_options_parse(trim($slide), $parser, false);
-            $html .= '<div class="'.$st.'" id="slide'.(self::$slideno++).'">'.$output.'</div>';
+            $html .= '<div class="'.$st.'" '.$style.' id="slide'.(self::$slideno++).'">'.$output.'</div>';
         }
-        $html .= '<div style="clear: both"></div>';
+        if (!$attr['float'])
+            $html .= '<div style="clear: both"></div>';
+        else
+            $html = "<div style='float: $attr[float]; margin: ".($attr['float'] == 'left' ? '0 1em 1em 0' : '0 0 0 1em')."'>$html</div>";
         return $html;
     }
 
