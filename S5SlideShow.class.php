@@ -171,9 +171,10 @@ class S5SlideShow
                 $e->nodeValue = 'slides';
                 $slide->appendChild($e);
                 $e = $doc->createElement('attr');
-                $e->nodeValue = ' title="'.htmlspecialchars($st[0]).'"';
+                $v = ' title="'.htmlspecialchars($st[0]).'"';
                 if ($st[1])
-                    $e->nodeValue .= ' incremental="1"';
+                    $v .= ' incremental="1"';
+                $e->nodeValue = htmlspecialchars($v);
                 $slide->appendChild($e);
                 $e = $doc->createElement('inner');
                 $slide->appendChild($e);
