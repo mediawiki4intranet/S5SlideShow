@@ -180,7 +180,7 @@ class S5SlideShow
                 $e = $doc->createElement('inner');
                 $slide->appendChild($e);
                 $e1 = $doc->createElement('close');
-                $e1->nodeValue = '</slides>';
+                $e1->nodeValue = "</slides>\n";
                 $slide->appendChild($e1);
                 $node->node->insertBefore($slide, $c);
                 $node->node->removeChild($c);
@@ -297,7 +297,7 @@ class S5SlideShow
             $replace["[$v]"] = $this->parse($this->attr[$v], true);
         $replace['[addcss]'] = implode("\n", $this->css);
         if ($this->attr['font'])
-            $replace['[addcss]'] .= "\n.slide { font-family: {$this->attr['font']}; }";
+            $replace['[addcss]'] .= "\n.slide, div#header, div#footer { font-family: {$this->attr['font']}; }";
         $replace['[addcss]'] = strip_tags($replace['[addcss]']);
         $replace['[style]'] = $this->attr['style'];
         $replace['[pageid]'] = $this->sArticle->getID();
