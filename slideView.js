@@ -13,6 +13,7 @@
         (f ? 'font-family: '+f+'; ' : '')+'width: '+w+'px; height: '+h+
         'px; float: left; border: 1px solid gray; text-align: center; margin: 1px; overflow: hidden;'
     );
+    s5ss_addRule('.slide.withtitle { text-align: left; padding-left: 4px; }');
     s5ss_addRule('div#content .slide p', 'text-align: center;');
 
     window.addEventListener('load', function() {

@@ -394,22 +394,52 @@ class S5SlideShow
     }
 
     /**
+     * Parse content using an existing parser and cloned options
+     * without LimitReport, without EditSections
+     */
+    static function clone_options_parse($content, $parser, $inline = false)
+    {
+        if (!$parser->mTitle)
+        {
+            wfDebug(__METHOD__.": no title object in parser\n");
+            return '';
+        }
+        $oldOpt = $parser->mOptions;
+        if (!($opt = $parser->extClonedOptions))
+        {
+            if (!$oldOpt)
+            {
+                global $wgUser;
+                $oldOpt = ParserOptions::newFromUser($wgUser);
+            }
+            $opt = clone $oldOpt;
+            $opt->enableLimitReport(false);
+            $opt->setEditSection(false);
+            $parser->extClonedOptions = $opt;
+        }
+        $html = $parser->parse($content, $parser->mTitle, $opt, !$inline, false)->getText();
+        $parser->mOptions = $oldOpt;
+        return $html;
+    }
+
+    /**
      * <slideshow> - article view mode
      * displays a link to the slideshow and skin preview
      */
     static function slideshow_view($content, $attr, $parser, $frame = NULL, $addmsg = '')
     {
         global $wgScriptPath, $wgParser;
-        if (!($title = $parser->getTitle()))
+        if (!$parser->mTitle)
         {
-            wfDebug(__CLASS__.': no title object in parser');
+            wfDebug(__METHOD__.": no title object in parser\n");
             return '';
         }
         // Create slideshow object
         $attr['content'] = $content;
-        $slideShow = new S5SlideShow($title, NULL, $attr);
-        $url = $title->escapeLocalURL(array('action' => 'slide'));
+        $slideShow = new S5SlideShow($parser->mTitle, NULL, $attr);
+        $url = $parser->mTitle->escapeLocalURL(array('action' => 'slide'));
         $stylepreview = $wgScriptPath."/extensions/S5SlideShow/".$slideShow->attr['style']."/preview.png";
+        $inside = self::clone_options_parse($content, $wgParser, true);
         return
             '<script type="text/javascript">var wgSlideViewFont = "'.addslashes($slideShow->attr['font']).'";</script>'.
             '<script type="text/javascript" src="'.$wgScriptPath.'/extensions/S5SlideShow/contentScale.js"></script>'.
@@ -417,8 +447,7 @@ class S5SlideShow
             '<div class="floatright" style="text-align: center"><span>'.
             '<a href="'.$url.'" class="image" title="Slide Show" target="_blank">'.
             '<img src="'.$stylepreview.'" alt="Slide Show" width="240px" /><br />'.
-            'Slide Show</a></span>'.$addmsg.'</div>'.
-            $wgParser->parse($content, $title, $wgParser->mOptions, false, false)->getText();
+            'Slide Show</a></span>'.$addmsg.'</div>'.$inside;
     }
 
     // <slideshow> - slideshow parse mode
@@ -438,11 +467,17 @@ class S5SlideShow
         else
             $slides = array($content);
         $html = '';
-        foreach ($slides as $slide)
+        foreach ($slides as $i => $slide)
         {
-            $output = $parser->parse(trim($slide), $parser->mTitle, $parser->mOptions, true, false);
-            $html .= '<div class="slide" id="slide'.(self::$slideno++).'">'.
-                $output->getText().'</div>';
+            if ($attr['title'] && !$i)
+            {
+                $slide = "== $attr[title] ==\n".trim($slide);
+                $st = 'slide withtitle';
+            }
+            else
+                $st = 'slide';
+            $output = self::clone_options_parse(trim($slide), $parser, false);
+            $html .= '<div class="'.$st.'" id="slide'.(self::$slideno++).'">'.$output.'</div>';
         }
         $html .= '<div style="clear: both"></div>';
         return $html;
@@ -456,7 +491,10 @@ class S5SlideShow
         else
             $slides = array($content);
         foreach ($slides as $c)
+        {
             $this->slides[] = array('content' => trim($c)) + $attr;
+            unset($attr['title']);
+        }
     }
 
     // <slidecss> - article view mode
