@@ -80,7 +80,7 @@ class S5SlideShowHooks
     // Hook for ?action=slide
     static function UnknownAction($action, $article)
     {
-        global $wgRequest;
+        global $wgMaxRedirects, $wgRequest;
         if ($action == 'slide')
         {
             $s5skin = trim($wgRequest->getVal('s5skin'));
@@ -94,8 +94,13 @@ class S5SlideShowHooks
             }
             // Check if the article is readable
             $title = $article->getTitle();
-            if (!$title->userCanRead())
-                return true;
+            for ($r = 0; $r < $wgMaxRedirects && $title->isRedirect(); $r++)
+            {
+                if (!$title->userCanRead())
+                    return true;
+                $title = $article->followRedirect();
+                $article = new Article($title);
+            }
             // Hack for CustIS live preview
             // TODO remove support for loading text from session object and
             //      replace it by support for save-staying-in-edit-mode extension
