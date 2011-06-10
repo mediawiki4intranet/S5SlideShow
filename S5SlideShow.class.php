@@ -160,7 +160,7 @@ class S5SlideShow
         $doc = $node->node->ownerDocument;
         $all = $node->node->childNodes;
         $this->heading_re = '/'.str_replace('/', '\\/', $this->attr['headingmark']).'/';
-        if (strlen($this->incmark))
+        if (strlen($this->attr['incmark']))
             $this->inc_re = '/'.str_replace('/', '\\/', $this->attr['incmark']).'/';
         for ($i = 0; $i < $all->length; $i++)
         {
