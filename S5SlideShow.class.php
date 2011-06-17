@@ -441,17 +441,29 @@ class S5SlideShow
         // Create slideshow object
         $attr['content'] = $content;
         $slideShow = new S5SlideShow($parser->mTitle, NULL, $attr);
+        // FIXME remove hardcoded '.png', /extensions/S5SlideShow/, "Slide Show"
         $url = $parser->mTitle->escapeLocalURL(array('action' => 'slide'));
-        $stylepreview = $wgScriptPath."/extensions/S5SlideShow/".$slideShow->attr['style']."/preview.png";
+        $style_preview = wfLocalFile(Title::newFromText('S5-'.$slideShow->attr['style'].'-preview.png', NS_FILE));
+        if ($style_preview->exists())
+        {
+            $style_preview = $style_preview->getTitle()->getPrefixedText();
+            $style_preview = self::clone_options_parse("[[$style_preview|240px|link=]]", $wgParser, true);
+        }
+        else
+        {
+            $style_preview = '<img src="'.$wgScriptPath.'/extensions/S5SlideShow/'.
+                $slideShow->attr['style'].'/preview.png" alt="Slide Show" width="240px" />';
+        }
         $inside = self::clone_options_parse($content, $wgParser, true);
         return
             '<script type="text/javascript">var wgSlideViewFont = "'.addslashes($slideShow->attr['font']).'";</script>'.
             '<script type="text/javascript" src="'.$wgScriptPath.'/extensions/S5SlideShow/contentScale.js"></script>'.
             '<script type="text/javascript" src="'.$wgScriptPath.'/extensions/S5SlideShow/slideView.js"></script>'.
             '<div class="floatright" style="text-align: center"><span>'.
-            '<a href="'.$url.'" class="image" title="Slide Show" target="_blank">'.
-            '<img src="'.$stylepreview.'" alt="Slide Show" width="240px" /><br />'.
-            'Slide Show</a></span>'.$addmsg.'</div>'.$inside;
+            '<a href="'.$url.'" class="image" title="Slide Show" target="_blank">'.$style_preview.
+            '<br />'.
+            'Slide Show</a></span>'.$addmsg.'</div>'.
+            $inside;
     }
 
     // <slideshow> - slideshow parse mode
