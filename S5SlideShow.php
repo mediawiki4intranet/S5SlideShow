@@ -38,15 +38,15 @@ if (!defined('MEDIAWIKI'))
 
 // Default value for headingmark
 // Empty = do not treat subsections as slides by default
-if (!$egS5SlideHeadingMark)
+if (!isset($egS5SlideHeadingMark))
     $egS5SlideHeadingMark = '';
 
 // Default value for incmark
-if (!$egS5SlideIncMark)
+if (!isset($egS5SlideIncMark))
     $egS5SlideIncMark = '(step)';
 
 // Filesystem path to slideshow template file
-if (!$egS5SlideTemplateFile)
+if (!isset($egS5SlideTemplateFile))
     $egS5SlideTemplateFile = dirname(__FILE__).'/slide.htm';
 
 //--- End configuration ---//
