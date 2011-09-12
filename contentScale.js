@@ -48,24 +48,34 @@ function contentScale(cont, hSize, vSize, initialFontSize)
 				img.origWidth = img.width;
 			w = Math.round(img.width*aspect);
 			h = Math.round(img.height*aspect);
+			var sc = w/img.origWidth;
 			var svg = img.contentDocument.documentElement;
+			// Scale width and height
 			svg.setAttribute('width', w);
 			svg.setAttribute('height', h);
+			img.width = w;
+			img.height = h;
+			// Scale viewBox
+			var box = svg.getAttribute('viewBox');
+			if (box)
+			{
+				box = box.split(/\s+/);
+				for (var i = 0; i < box.length; i++)
+					box[i] = box[i]*sc;
+				svg.setAttribute('viewBox', box);
+			}
 			// Move SVG contents into a layer
 			if (svg.childNodes.length > 1 || svg.childNodes[0].id != '_gsc')
 			{
 				var g = img.contentDocument.createElementNS('http://www.w3.org/2000/svg', 'g');
 				g.id = '_gsc';
-				for (var e = 0; e < svg.childNodes.length; e++)
-					g.appendChild(svg.childNodes[e]);
+				while (svg.childNodes.length)
+					g.appendChild(svg.childNodes[0]);
 				svg.appendChild(g);
 			}
-			// Scale SVG contents
+			// Scale content layer
 			svg = svg.childNodes[0];
-			var sc = w/img.origWidth;
 			svg.setAttribute('transform', 'scale('+sc+' '+sc+')');
-			img.width = w;
-			img.height = h;
 		}
 		// Scale class="scaled" elements using CSS3 (VERY EXPERIMENTAL)
 		if (t && cont.getElementsByClassName)
