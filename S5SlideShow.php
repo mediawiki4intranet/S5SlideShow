@@ -34,6 +34,8 @@
 if (!defined('MEDIAWIKI'))
     die();
 
+$dir = dirname(__FILE__);
+
 //--- Default configuration ---//
 
 // Default value for headingmark
@@ -47,18 +49,37 @@ if (!isset($egS5SlideIncMark))
 
 // Filesystem path to slideshow template file
 if (!isset($egS5SlideTemplateFile))
-    $egS5SlideTemplateFile = dirname(__FILE__).'/slide.htm';
+    $egS5SlideTemplateFile = $dir.'/slide.htm';
+
+// In scaled slideshow mode, images are scaled proportionally
+// with all other elements. This means you can set image size
+// with [[File:xxx.jpg|150px]] - these 150px will also be relative
+// to other elements. But, without the following hack, the
+// images will be added to slides downsampled, and then, in
+// slideshow mode, they will be probably scaled back, which leads
+// to reduced quality.
+
+// If this setting is true, hack into parser when in slideshow
+// mode and output original images with HTML width/height set -
+// i.e. hand off scaling to the browser - instead of outputting
+// downsampled thumbnails. (default = true)
+if (!isset($egS5BrowserScaleHack))
+    $egS5BrowserScaleHack = true;
 
 //--- End configuration ---//
 
 /* Extension setup */
 
-$wgExtensionFunctions[] = 'S5SlideShowHooks::Setup';
+$wgExtensionMessagesFiles['S5SlideShow'] = $dir.'/S5SlideShow.i18n.php';
 $wgHooks['UnknownAction'][] = 'S5SlideShowHooks::UnknownAction';
-$wgAutoloadClasses['S5SlideShow'] = dirname(__FILE__).'/S5SlideShow.class.php';
-$wgAutoloadClasses['S5SkinArticle'] = dirname(__FILE__).'/S5SlideShow.class.php';
+$wgAutoloadClasses['S5SlideShow'] = $dir.'/S5SlideShow.class.php';
+$wgAutoloadClasses['S5SkinArticle'] = $dir.'/S5SlideShow.class.php';
+$wgExtensionFunctions[] = 'S5SlideShowHooks::Setup';
+$wgHooks['ParserFirstCallInit'][] = 'S5SlideShowHooks::ParserFirstCallInit';
 $wgHooks['ArticleFromTitle'][] = 'S5SlideShowHooks::ArticleFromTitle';
 $wgHooks['AlternateEdit'][] = 'S5SlideShowHooks::AlternateEdit';
+$wgHooks['MagicWordwgVariableIDs'][] = 'S5SlideShowHooks::MagicWordwgVariableIDs';
+$wgHooks['ParserGetVariableValueSwitch'][] = 'S5SlideShowHooks::ParserGetVariableValueSwitch';
 
 class S5SlideShowHooks
 {
@@ -68,14 +89,79 @@ class S5SlideShowHooks
         'framing.css' => 's5-framing.css',
         'pretty.css'  => '$skin/pretty.css',
     );
-    // Setup parser hook for <slide>
-    static function Setup()
+    static $parsingSlide = false;
+    // Setup parser hooks for S5
+    static function ParserFirstCallInit(&$parser)
     {
         global $wgParser;
         $wgParser->setHook('slideshow', 'S5SlideShow::slideshow_view');
         $wgParser->setHook('slide', 'S5SlideShow::slideshow_legacy');
         $wgParser->setHook('slides', 'S5SlideShow::slides_view');
         $wgParser->setHook('slidecss', 'S5SlideShow::slidecss_view');
+        return true;
+    }
+    // Setup hook for image scaling hack
+    static function Setup()
+    {
+        global $egS5BrowserScaleHack, $wgHooks;
+        if ($egS5BrowserScaleHack)
+            $wgHooks['ImageBeforeProduceHTML'][] = 'S5SlideShowHooks::ImageBeforeProduceHTML';
+    }
+    // Hook that creates {{S5SLIDESHOW}} magic word
+    static function MagicWordwgVariableIDs(&$mVariablesIDs)
+    {
+        wfLoadExtensionMessages('UserMagic');
+        $mVariablesIDs[] = 's5slideshow';
+        return true;
+    }
+    // Hook that evaluates {{S5SLIDESHOW}} magic word
+    static function ParserGetVariableValueSwitch(&$parser, &$varCache, &$index, &$ret)
+    {
+        if ($index == 's5slideshow')
+            $ret = empty(self::$parsingSlide) ? '' : '1';
+        return true;
+    }
+    // Render pictures differently in slide show mode
+    static function ImageBeforeProduceHTML($skin, &$title, &$file, &$frameParams, &$handlerParams, &$time, &$res)
+    {
+        if (empty(self::$parsingSlide) || !$file || !$file->exists() || !$handlerParams['width'])
+            return true;
+        $fp = &$frameParams;
+        $hp = &$handlerParams;
+        $center = false;
+        if (isset($fp['align']) && $fp['align'] == 'center')
+        {
+            $center = true;
+            $fp['align'] = 'none';
+        }
+        $thumb = $file->getUnscaledThumb( isset( $hp['page'] ) ? $hp['page'] : false );
+        $thumb->height = ceil( $thumb->height * $hp['width'] / $thumb->width );
+        $thumb->width = $hp['width'];
+        $params = array(
+            'alt' => $fp['alt'],
+            'title' => $fp['title'],
+        );
+        if (!empty($fp['link-url']))
+            $params['custom-url-link'] = $fp['link-url'];
+        elseif (!empty($fp['link-title']))
+            $params['custom-title-link'] = $fp['link-title'];
+        elseif (!empty($fp['no-link']))
+        {
+        }
+        else
+            $params['desc-link'] = true;
+        $res .= $thumb->toHtml($params);
+        if (isset($fp['thumbnail']))
+        {
+            $outerWidth = $thumb->getWidth()+2;
+            $res = "<div class=\"thumb t$fp[align]\" style='border:0'>".
+                "<div class=\"thumbinner\">$res</div><div class='thumbcaption'>$fp[caption]</div></div>";
+        }
+        if ($fp['align'] != '')
+            $res = "<div class=\"float$fp[align]\">$res</div>";
+        if ($center)
+            $res = "<div class=\"center\">$res</div>";
+        return false;
     }
     // Hook for ?action=slide
     static function UnknownAction($action, $article)

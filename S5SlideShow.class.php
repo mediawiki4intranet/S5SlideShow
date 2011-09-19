@@ -248,10 +248,13 @@ class S5SlideShow
         if (!$title)
             $title = $this->sTitle;
         $text = str_replace("__TOC__", '', trim($text));
+        $prev = S5SlideShowHooks::$parsingSlide;
+        S5SlideShowHooks::$parsingSlide = true;
         $output = $this->getParser()->parse(
             "$text __NOTOC__ __NOEDITSECTION__", $title,
             $this->parserOptions, !$inline, false
         );
+        S5SlideShowHooks::$parsingSlide = $prev;
         return $output->getText();
     }
 
