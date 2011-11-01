@@ -38,18 +38,18 @@ $dir = dirname(__FILE__);
 
 //--- Default configuration ---//
 
-// Default value for headingmark
+// Headings with this text will be treated as slide headings
 // Empty = do not treat subsections as slides by default
-if (!isset($egS5SlideHeadingMark))
-    $egS5SlideHeadingMark = '';
+$egS5SlideHeadingMark = '';
 
-// Default value for incmark
-if (!isset($egS5SlideIncMark))
-    $egS5SlideIncMark = '(step)';
+// All lists on slides with this text in heading will be shown step-by-step
+$egS5SlideIncMark = '\(step\)';
+
+// Slides with this text in heading will be shown centered
+$egS5SlideCenterMark = '\(center\)';
 
 // Filesystem path to slideshow template file
-if (!isset($egS5SlideTemplateFile))
-    $egS5SlideTemplateFile = $dir.'/slide.htm';
+$egS5SlideTemplateFile = $dir.'/slide.htm';
 
 // In scaled slideshow mode, images are scaled proportionally
 // with all other elements. This means you can set image size
@@ -63,8 +63,7 @@ if (!isset($egS5SlideTemplateFile))
 // mode and output original images with HTML width/height set -
 // i.e. hand off scaling to the browser - instead of outputting
 // downsampled thumbnails. (default = true)
-if (!isset($egS5BrowserScaleHack))
-    $egS5BrowserScaleHack = true;
+$egS5BrowserScaleHack = true;
 
 //--- End configuration ---//
 
@@ -124,7 +123,7 @@ class S5SlideShowHooks
     // Render pictures differently in slide show mode
     static function ImageBeforeProduceHTML($skin, &$title, &$file, &$frameParams, &$handlerParams, &$time, &$res)
     {
-        if (empty(self::$parsingSlide) || !$file || !$file->exists() || !$handlerParams['width'])
+        if (empty(self::$parsingSlide) || !$file || !$file->exists() || !isset($handlerParams['width']))
             return true;
         $fp = &$frameParams;
         $hp = &$handlerParams;
@@ -157,7 +156,7 @@ class S5SlideShowHooks
             $res = "<div class=\"thumb t$fp[align]\" style='border:0'>".
                 "<div class=\"thumbinner\">$res</div><div class='thumbcaption'>$fp[caption]</div></div>";
         }
-        if ($fp['align'] != '')
+        if (isset($fp['align']) && $fp['align'])
             $res = "<div class=\"float$fp[align]\">$res</div>";
         if ($center)
             $res = "<div class=\"center\">$res</div>";
@@ -191,7 +190,7 @@ class S5SlideShowHooks
             // TODO remove support for loading text from session object and
             //      replace it by support for save-staying-in-edit-mode extension
             $content = $wgRequest->getVal('wpTextbox1');
-            if (!$content)
+            if (!$content && isset($_SESSION['wpTextbox1']))
             {
                 $content = $_SESSION['wpTextbox1'];
                 unset($_SESSION['wpTextbox1']);

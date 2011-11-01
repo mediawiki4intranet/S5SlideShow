@@ -19,6 +19,7 @@ div#header {background: url(custis.png) 98% 50% no-repeat; height: 15%;
   width: 80%;
   font-size: 150%/1em;
   font-weight: bold;}
+.slide.notitle h1.stitle {position: static; margin: 0; padding: 0; width: auto;}
 .slide h3 {font-size: 130%;}
 
 div#controls {left: 60%; width: 40%;}

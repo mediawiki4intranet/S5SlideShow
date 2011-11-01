@@ -66,18 +66,29 @@ class S5SlideShow
      */
     function setAttributes($attr)
     {
-        global $wgContLang, $wgUser, $egS5SlideHeadingMark, $egS5SlideIncMark;
+        global $wgContLang, $wgUser, $egS5SlideHeadingMark, $egS5SlideIncMark, $egS5SlideCenterMark;
         // Get attributes from tag content
         if (preg_match_all('/(?:^|\n)\s*;\s*([^:\s]*)\s*:\s*([^\n]*)/is', $attr['content'], $m, PREG_SET_ORDER) > 0)
             foreach ($m as $set)
-                $attr[$set[1]] = $set[2];
-        // Default slide show title = page title
-        if (!array_key_exists('title', $attr))
-            $attr['title'] = $this->sTitle->getText();
-        $attr['title'] = trim($attr['title']);
-        // No subtitle by default
+                $attr[$set[1]] = trim($set[2]);
+        // Default values
+        $attr = $attr + array(
+            'title'       => $this->sTitle->getText(),
+            'subtitle'    => '',
+            'footer'      => $this->sTitle->getText(),
+            'headingmark' => $egS5SlideHeadingMark,
+            'incmark'     => $egS5SlideIncMark,
+            'centermark'  => $egS5SlideCenterMark,
+            'style'       => 'default',
+            // Backwards compatibility: appended CSS
+            'addcss'      => '',
+            // Is each slide to be scaled independently?
+            'scaled'      => false,
+        );
+        // Boolean value
+        $attr['scaled'] = $attr['scaled'] == 'true' || $attr['scaled'] == 'yes' || $attr['scaled'] == 1;
         // Default author = last revision's author
-        if (!array_key_exists('author', $attr))
+        if (!isset($attr['author']))
         {
             $u = $this->sArticle->getLastNAuthors(1);
             $u = $u[0];
@@ -87,11 +98,8 @@ class S5SlideShow
                 $u = $wgUser;
             $attr['author'] = $u->getRealName();
         }
-        // Slideshow title in the footer by default
-        if (!array_key_exists('footer', $attr))
-            $attr['footer'] = $attr['title'];
         // Author and date in the subfooter by default
-        if (!array_key_exists('subfooter', $attr))
+        if (!isset($attr['subfooter']))
         {
             $attr['subfooter'] = $attr['author'];
             if ($attr['subfooter'])
@@ -106,49 +114,46 @@ class S5SlideShow
                 $attr['subfooter']
             );
         }
-        // Default heading mark = $egS5SlideHeadingMark
-        if (!array_key_exists('headingmark', $attr))
-            $attr['headingmark'] = $egS5SlideHeadingMark;
-        $attr['headingmark'] = trim($attr['headingmark']);
-        // Default incremental mark = $egS5SlideIncMark
-        $attr['incmark'] = trim($attr['incmark']);
-        if (!$attr['incmark'])
-            $attr['incmark'] = $egS5SlideIncMark;
-        // Default style = "default"
-        $attr['style'] = trim($attr['style']);
-        if (!$attr['style'])
-            $attr['style'] = 'default';
-        // Backwards compatibility: appended CSS
-        $attr['addcss'] = trim($attr['addcss']);
-        // Is each slide to be scaled independently?
-        $attr['scaled'] = strtolower(trim($attr['scaled']));
-        $attr['scaled'] = $attr['scaled'] == 'true' || $attr['scaled'] == 'yes' || $attr['scaled'] == 1;
         $this->attr = $attr + $this->attr;
     }
 
     /**
-     * Checks heading text for 'headingmark' and 'incmark'
+     * Checks heading text for headingmark, incmark, centermark
+     * Returns NULL or array(title, incremental, centered)
      */
-    function is_slide_heading($node)
+    function check_slide_heading($node)
     {
         $ot = trim($node->nodeValue, "= \n\r\t\v");
         $st = preg_replace($this->heading_re, '', $ot);
         if ($st != $ot)
         {
+            $inc = false;
+            $center = false;
             if ($this->inc_re)
             {
-                $it = preg_replace($this->inc_re, '', $st);
-                if ($it != $st)
-                    return array($it, true);
+                $t = preg_replace($this->inc_re, '', $st);
+                if ($t != $st)
+                {
+                    $inc = true;
+                    $st = $t;
+                }
             }
-            return array($st, false);
+            if ($this->center_re)
+            {
+                $t = preg_replace($this->center_re, '', $st);
+                if ($t != $st)
+                {
+                    $center = true;
+                    $st = $t;
+                }
+            }
+            return array($st, $inc, $center);
         }
         return NULL;
     }
 
     /**
-     * This function transforms slides specified as subsection
-     * into <slides> tags.
+     * This function transforms section slides into <slides> tags
      */
     function transform_section_slides($content)
     {
@@ -160,12 +165,14 @@ class S5SlideShow
         $doc = $node->node->ownerDocument;
         $all = $node->node->childNodes;
         $this->heading_re = '/'.str_replace('/', '\\/', $this->attr['headingmark']).'/';
-        if (strlen($this->attr['incmark']))
+        if ($this->attr['incmark'])
             $this->inc_re = '/'.str_replace('/', '\\/', $this->attr['incmark']).'/';
+        if ($this->attr['centermark'])
+            $this->center_re = '/'.str_replace('/', '\\/', $this->attr['centermark']).'/';
         for ($i = 0; $i < $all->length; $i++)
         {
             $c = $all->item($i);
-            if ($c->nodeName == 'h' && ($st = $this->is_slide_heading($c)) !== NULL)
+            if ($c->nodeName == 'h' && ($st = $this->check_slide_heading($c)) !== NULL)
             {
                 $slide = $doc->createElement('ext');
                 $e = $doc->createElement('name');
@@ -175,6 +182,8 @@ class S5SlideShow
                 $v = ' title="'.htmlspecialchars($st[0]).'"';
                 if ($st[1])
                     $v .= ' incremental="1"';
+                if ($st[2])
+                    $v .= ' center="1"';
                 $e->nodeValue = htmlspecialchars($v);
                 $slide->appendChild($e);
                 $e = $doc->createElement('inner');
@@ -187,7 +196,7 @@ class S5SlideShow
                 for ($j = $i+1; $j < $all->length; )
                 {
                     $d = $all->item($j);
-                    if ($this->is_slide_heading($d) !== NULL ||
+                    if ($this->check_slide_heading($d) !== NULL ||
                         $d->nodeName == 'h' && $d->getAttribute('level') <= $c->getAttribute('level'))
                         break;
                     if ($d->nodeName == 'ext')
@@ -235,6 +244,8 @@ class S5SlideShow
             $slide['content_html'] = $this->parse($slide['content']);
             if ($slide['title'])
                 $slide['title_html'] = $this->parse($slide['title'], true);
+            else
+                $slide['title_html'] = '';
         }
         return $this->slides;
     }
@@ -296,7 +307,7 @@ class S5SlideShow
 
         // build replacement array for slide show template
         $replace = array();
-        foreach(split(' ', 'title subtitle author footer subfooter addcss') as $v)
+        foreach(explode(' ', 'title subtitle author footer subfooter addcss') as $v)
             $replace["[$v]"] = $this->parse($this->attr[$v], true);
         $replace['[addcss]'] = implode("\n", $this->css);
         if ($this->attr['font'])
@@ -325,7 +336,10 @@ class S5SlideShow
             }
             $c = "<div class='slidecontent'>$c</div>";
             if (trim(strip_tags($t)))
-                $slides_html .= "<div class='slide'><h1 class='stitle'>$t</h1>$c</div>\n";
+            {
+                $center = $slide['center'] ? " notitle" : "";
+                $slides_html .= "<div class='slide$center'><h1 class='stitle'>$t</h1>$c</div>\n";
+            }
             else
                 $slides_html .= "<div class='slide notitle'>$c</div>\n";
         }
@@ -412,7 +426,7 @@ class S5SlideShow
             return '';
         }
         $oldOpt = $parser->mOptions;
-        if (!($opt = $parser->extClonedOptions))
+        if (!isset($parser->extClonedOptions))
         {
             if (!$oldOpt)
             {
@@ -424,7 +438,7 @@ class S5SlideShow
             $opt->setEditSection(false);
             $parser->extClonedOptions = $opt;
         }
-        $html = $parser->parse($content, $parser->mTitle, $opt, !$inline, false)->getText();
+        $html = $parser->parse($content, $parser->mTitle, $parser->extClonedOptions, !$inline, false)->getText();
         $parser->mOptions = $oldOpt;
         return $html;
     }
@@ -487,15 +501,15 @@ class S5SlideShow
             $slides = array($content);
         $html = '';
         $style = '';
-        if (!$attr['float'])
+        if (!isset($attr['float']))
             $style .= "float: left; ";
-        if ($attr['width'])
+        if (isset($attr['width']))
             $style .= "width: $attr[width]px; ";
         if ($style)
             $style = " style='$style'";
         foreach ($slides as $i => $slide)
         {
-            if ($attr['title'] && !$i)
+            if (isset($attr['title']) && !$i)
             {
                 $slide = "== $attr[title] ==\n".trim($slide);
                 $st = 'slide withtitle';
@@ -505,7 +519,7 @@ class S5SlideShow
             $output = self::clone_options_parse(trim($slide), $parser, false);
             $html .= '<div class="'.$st.'" '.$style.' id="slide'.(self::$slideno++).'">'.$output.'</div>';
         }
-        if (!$attr['float'])
+        if (!isset($attr['float']))
             $html .= '<div style="clear: both"></div>';
         else
             $html = "<div style='float: $attr[float]; margin: ".($attr['float'] == 'left' ? '0 1em 1em 0' : '0 0 0 1em')."'>$html</div>";
@@ -515,13 +529,17 @@ class S5SlideShow
     // <slides> - slideshow parse mode
     function slides_parse($content, $attr, $parser)
     {
-        if ($attr['split'])
+        if (isset($attr['split']))
             $slides = preg_split('/'.str_replace('/', '\\/', $attr['split']).'/', $content);
         else
             $slides = array($content);
         foreach ($slides as $c)
         {
-            $this->slides[] = array('content' => trim($c)) + $attr;
+            $this->slides[] = array('content' => trim($c)) + $attr + array(
+                'title' => '',
+                'incremental' => false,
+                'center' => false,
+            );
             unset($attr['title']);
         }
     }
