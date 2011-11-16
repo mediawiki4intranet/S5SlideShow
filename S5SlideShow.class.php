@@ -472,8 +472,7 @@ class S5SlideShow
                 $slideShow->attr['style'].'/preview.png" alt="Slide Show" width="240px" />';
         }
         $inside = self::clone_options_parse($content, $wgParser, true);
-        return
-            '<script type="text/javascript">var wgSlideViewFont = "'.addslashes($slideShow->attr['font']).'";</script>'.
+        $html =
             '<script type="text/javascript" src="'.$wgScriptPath.'/extensions/S5SlideShow/contentScale.js"></script>'.
             '<script type="text/javascript" src="'.$wgScriptPath.'/extensions/S5SlideShow/slideView.js"></script>'.
             '<div class="floatright" style="text-align: center"><span>'.
@@ -481,6 +480,12 @@ class S5SlideShow
             '<br />'.
             'Slide Show</a></span>'.$addmsg.'</div>'.
             $inside;
+        if (!empty($slideShow->attr['font']))
+        {
+            $html = '<script type="text/javascript">var wgSlideViewFont = "'.
+                addslashes($slideShow->attr['font']).'";</script>' . $html;
+        }
+        return $html;
     }
 
     // <slideshow> - slideshow parse mode
