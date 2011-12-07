@@ -164,11 +164,11 @@ class S5SlideShow
         $node = $p->getPreprocessor()->preprocessToObj($content);
         $doc = $node->node->ownerDocument;
         $all = $node->node->childNodes;
-        $this->heading_re = '/'.str_replace('/', '\\/', $this->attr['headingmark']).'/';
+        $this->heading_re = '/'.str_replace('/', '\\/', preg_quote($this->attr['headingmark'])).'/';
         if ($this->attr['incmark'])
-            $this->inc_re = '/'.str_replace('/', '\\/', $this->attr['incmark']).'/';
+            $this->inc_re = '/'.str_replace('/', '\\/', preg_quote($this->attr['incmark'])).'/';
         if ($this->attr['centermark'])
-            $this->center_re = '/'.str_replace('/', '\\/', $this->attr['centermark']).'/';
+            $this->center_re = '/'.str_replace('/', '\\/', preg_quote($this->attr['centermark'])).'/';
         for ($i = 0; $i < $all->length; $i++)
         {
             $c = $all->item($i);
