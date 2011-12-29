@@ -80,6 +80,7 @@ class S5SlideShow
             'incmark'     => $egS5SlideIncMark,
             'centermark'  => $egS5SlideCenterMark,
             'style'       => 'default',
+            'font'        => '',
             // Backwards compatibility: appended CSS
             'addcss'      => '',
             // Is each slide to be scaled independently?
