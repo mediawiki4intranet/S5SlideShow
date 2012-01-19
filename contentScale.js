@@ -34,8 +34,12 @@ function contentScale(cont, hSize, vSize, initialFontSize)
 			img = is[j];
 			w = img.scrollWidth;
 			h = img.scrollHeight;
-			img.style.width = Math.round(w*aspect)+'px';
-			img.style.height = Math.round(h*aspect)+'px';
+			if (w > 0)
+			{
+				// FIXME this fails on display:none :(
+				img.style.width = Math.round(w*aspect)+'px';
+				img.style.height = Math.round(h*aspect)+'px';
+			}
 		}
 		// Scale SVG images:
 		is = cont.getElementsByTagName('object');

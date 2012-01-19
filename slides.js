@@ -192,9 +192,9 @@ function go(step) {
 		location.hash = nid;
 		window.scrollTo(0);
 	} else {
-		ce.style.visibility = 'hidden'; 
-		ne.style.visibility = 'visible';
-	} // /hallvord
+		removeClass(ce, 'visible');
+		addClass(ne, 'visible');
+	} //hallvord
 	jl.selectedIndex = snum;
 	setS5Cookie(snum);
 	currentSlide();
@@ -236,7 +236,7 @@ function toggle() {
 		setFontSize('body', '1em');
 		for (var n = 0; n < smax; n++) {
 			var slide = slideColl[n];
-			slide.style.visibility = 'visible';
+			addClass(slide, 'visible');
 		}
 	} else {
 		slides.disabled = false;
@@ -245,9 +245,9 @@ function toggle() {
 		fontScale();
 		for (var n = 0; n < smax; n++) {
 			var slide = slideColl[n];
-			slide.style.visibility = 'hidden';
+			removeClass(slide, 'visible');
 		}
-		slideColl[snum].style.visibility = 'visible';
+		addClass(slideColl[snum], 'visible');
 	}
 }
 
@@ -502,6 +502,13 @@ function notOperaFix() {
 		document.styleSheets[0].addRule('img', 'behavior: url(extensions/S5SlideShow/iepngfix.htc)');
 		document.styleSheets[0].addRule('div', 'behavior: url(extensions/S5SlideShow/iepngfix.htc)');
 		document.styleSheets[0].addRule('.slide', 'behavior: url(extensions/S5SlideShow/iepngfix.htc)');
+	}
+}
+
+function operaFix() {
+	var slides = GetElementsWithClassName('*','slide');
+	for (var i = 0; i < slides.length; i++) {
+		addClass(slides[i], 'visible');
 	}
 }
 
@@ -821,6 +828,7 @@ function startup() {
 	fixLinks();
 	externalLinks();
 	if (!isOp) notOperaFix();
+	else operaFix();
 	slideJump();
 	fontScale();
 	if (defaultView == 'outline') {
