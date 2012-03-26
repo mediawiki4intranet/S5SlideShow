@@ -10,7 +10,7 @@ html>body div#header, html>body div#footer,
 .anim.over .incremental, .anim.over .previous {display: none;}
 .notitle .slidecontent {margin: auto; display: table;}
 
-.slide, .incremental {visibility: visible; opacity: 0;}
+.slide, .incremental {visibility: visible; opacity: 0; z-index: -1;}
 .visible {opacity: 1;}
 .anim .current, .slide {
     opacity: 100%;
