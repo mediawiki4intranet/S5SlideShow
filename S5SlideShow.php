@@ -92,11 +92,10 @@ class S5SlideShowHooks
     // Setup parser hooks for S5
     static function ParserFirstCallInit(&$parser)
     {
-        global $wgParser;
-        $wgParser->setHook('slideshow', 'S5SlideShow::slideshow_view');
-        $wgParser->setHook('slide', 'S5SlideShow::slideshow_legacy');
-        $wgParser->setHook('slides', 'S5SlideShow::slides_view');
-        $wgParser->setHook('slidecss', 'S5SlideShow::slidecss_view');
+        $parser->setHook('slideshow', 'S5SlideShow::slideshow_view');
+        $parser->setHook('slide', 'S5SlideShow::slideshow_legacy');
+        $parser->setHook('slides', 'S5SlideShow::slides_view');
+        $parser->setHook('slidecss', 'S5SlideShow::slidecss_view');
         return true;
     }
     // Setup hook for image scaling hack
