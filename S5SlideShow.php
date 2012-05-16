@@ -92,10 +92,27 @@ class S5SlideShowHooks
     // Setup parser hooks for S5
     static function ParserFirstCallInit(&$parser)
     {
-        $parser->setHook('slideshow', 'S5SlideShow::slideshow_view');
-        $parser->setHook('slide', 'S5SlideShow::slideshow_legacy');
-        $parser->setHook('slides', 'S5SlideShow::slides_view');
-        $parser->setHook('slidecss', 'S5SlideShow::slidecss_view');
+        if (!isset($parser->extS5Hooks))
+        {
+            $parser->setHook('slideshow', 'S5SlideShow::slideshow_view');
+            $parser->setHook('slide', 'S5SlideShow::slideshow_legacy');
+            $parser->setHook('slides', 'S5SlideShow::slides_view');
+            $parser->setHook('slidecss', 'S5SlideShow::slidecss_view');
+        }
+        elseif ($parser->extS5Hooks == 'parse')
+        {
+            $parser->setHook('slideshow', array($parser->extS5, 'slideshow_parse'));
+            $parser->setHook('slide', array($parser->extS5, 'slideshow_parse'));
+            $parser->setHook('slides', 'S5SlideShow::empty_tag_hook');
+            $parser->setHook('slidecss', 'S5SlideShow::empty_tag_hook');
+        }
+        elseif ($parser->extS5Hooks == 'parse2')
+        {
+            $parser->setHook('slideshow', 'S5SlideShow::empty_tag_hook');
+            $parser->setHook('slide', 'S5SlideShow::empty_tag_hook');
+            $parser->setHook('slides', array($parser->extS5, 'slides_parse'));
+            $parser->setHook('slidecss', array($parser->extS5, 'slidecss_parse'));
+        }
         return true;
     }
     // Setup hook for image scaling hack

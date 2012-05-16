@@ -230,10 +230,8 @@ class S5SlideShow
             $content = $this->pageContent;
         $this->getParser();
         $p = new Parser;
-        $p->setHook('slideshow', array($this, 'slideshow_parse'));
-        $p->setHook('slide', array($this, 'slideshow_parse'));
-        $p->setHook('slides', 'S5SlideShow::empty_tag_hook');
-        $p->setHook('slidecss', 'S5SlideShow::empty_tag_hook');
+        $p->extS5 = $this;
+        $p->extS5Hooks = 'parse';
         $p->parse($content, $this->sTitle, $this->parserOptions);
         if ($this->attr['headingmark'])
             $content = $this->transform_section_slides($content);
@@ -277,10 +275,8 @@ class S5SlideShow
             return $this->slideParser;
         global $wgParser, $wgUser;
         $this->slideParser = clone $wgParser;
-        $this->slideParser->setHook('slideshow', 'S5SlideShow::empty_tag_hook');
-        $this->slideParser->setHook('slide',     'S5SlideShow::empty_tag_hook');
-        $this->slideParser->setHook('slides',    array($this, 'slides_parse'));
-        $this->slideParser->setHook('slidecss',  array($this, 'slidecss_parse'));
+        $this->slideParser->extS5 = $this;
+        $this->slideParser->extS5Hooks = 'parse2';
         $this->slideParser->mShowToc = false;
         $this->parserOptions = ParserOptions::newFromUser($wgUser);
         $this->parserOptions->setEditSection(false);
