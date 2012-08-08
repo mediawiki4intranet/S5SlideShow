@@ -163,6 +163,10 @@ class S5SlideShow
         $content = $p->preprocess($content, $this->sTitle, $this->parserOptions);
         $p->setOutputType(Parser::OT_WIKI);
         $node = $p->getPreprocessor()->preprocessToObj($content);
+        if (!$node instanceof PPNode_DOM)
+        {
+            die("S5SlideShow extension requires DOM support and usage of DOM MediaWiki preprocessor");
+        }
         $doc = $node->node->ownerDocument;
         $all = $node->node->childNodes;
         $this->heading_re = '/'.str_replace('/', '\\/', preg_quote($this->attr['headingmark'])).'/';
@@ -175,6 +179,9 @@ class S5SlideShow
             $c = $all->item($i);
             if ($c->nodeName == 'h' && ($st = $this->check_slide_heading($c)) !== NULL)
             {
+                /**
+                 * Add <ext><name>slides</name><attr>ATTRS</attr><inner>CONTENT</inner></ext>
+                 */
                 $slide = $doc->createElement('ext');
                 $e = $doc->createElement('name');
                 $e->nodeValue = 'slides';
@@ -194,6 +201,8 @@ class S5SlideShow
                 $slide->appendChild($e1);
                 $node->node->insertBefore($slide, $c);
                 $node->node->removeChild($c);
+                // Move children of $node to $e, up to first <ext>
+                // with name="slide(s)" or heading of same or greater level
                 for ($j = $i+1; $j < $all->length; )
                 {
                     $d = $all->item($j);
