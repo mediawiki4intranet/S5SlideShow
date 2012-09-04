@@ -469,8 +469,10 @@ class S5SlideShow
         $slideShow = new S5SlideShow($parser->mTitle, NULL, $attr);
         // FIXME remove hardcoded '.png', /extensions/S5SlideShow/, "Slide Show"
         $url = $parser->mTitle->escapeLocalURL(array('action' => 'slide'));
-        $style_preview = wfLocalFile(Title::newFromText('S5-'.$slideShow->attr['style'].'-preview.png', NS_FILE));
-        if ($style_preview->exists())
+        $style_title = Title::newFromText('S5-'.$slideShow->attr['style'].'-preview.png', NS_FILE);
+        if ($style_title &&
+            ($style_preview = wfLocalFile($style_title)) &&
+            $style_preview->exists())
         {
             $style_preview = $style_preview->getTitle()->getPrefixedText();
             $style_preview = self::clone_options_parse("[[$style_preview|240px|link=]]", $wgParser, true);
