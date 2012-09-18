@@ -354,6 +354,7 @@ class S5SlideShow
         }
 
         // substitute values
+        $replace['[headitems]'] = implode("\n", $this->getParser()->mOutput->getHeadItems());
         $replace['[content]'] = $slides_html;
         $html = str_replace(
             array_keys($replace),
