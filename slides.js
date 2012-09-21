@@ -1,6 +1,6 @@
 // S5 v1.2a1 slides.js -- released into the Public Domain
 //
-// Please see http://www.meyerweb.com/eric/tools/s5/credits.html for information 
+// Please see http://www.meyerweb.com/eric/tools/s5/credits.html for information
 // about all the wonderful and talented contributors to this code!
 
 // Tuned by Vitaliy Filippov (http://wiki.4intra.net/)
@@ -126,9 +126,9 @@ function currentSlide() {
 	} else {
 		cs = document.currentSlide;
 	}
-	cs.innerHTML = '<a id="plink" href="">' + 
-		'<span id="csHere">' + snum + '<\/span> ' + 
-		'<span id="csSep">\/<\/span> ' + 
+	cs.innerHTML = '<a id="plink" href="">' +
+		'<span id="csHere">' + snum + '<\/span> ' +
+		'<span id="csSep">\/<\/span> ' +
 		'<span id="csTotal">' + (smax-1) + '<\/span>' +
 		'<\/a>'
 		;
@@ -160,10 +160,12 @@ function go(step) {
 		lmax = smax - 1;
 		if (snum > lmax) snum = lmax;
 		if (snum < 0) snum = 0;
-	} else
+	} else {
 		snum = parseInt(jl.value);
-	if (s5ScaleEachSlide)
+	}
+	if (s5ScaleEachSlide) {
 		fontScale(); // Experimental slide font scaling
+	}
 	var nid = 'slide' + snum;
 	var ne = document.getElementById(nid);
 	if (!ne) {
@@ -172,8 +174,7 @@ function go(step) {
 	}
 	if (step < 0) {incpos = incrementals[snum].length} else {incpos = 1}
 	if (incrementals[snum].length > 0) {
-		for (var i = 0; i < incrementals[snum].length && i < incpos-1; i++)
-		{
+		for (var i = 0; i < incrementals[snum].length && i < incpos-1; i++) {
 			addClass(incrementals[snum][i], 'previous');
 			removeClass(incrementals[snum][i], 'current');
 			removeClass(incrementals[snum][i], 'incremental');
@@ -181,8 +182,7 @@ function go(step) {
 		removeClass(incrementals[snum][incpos-1], 'previous');
 		addClass(incrementals[snum][incpos-1], 'current');
 		removeClass(incrementals[snum][incpos-1], 'incremental');
-		for (var i = incpos; i < incrementals[snum].length; i++)
-		{
+		for (var i = incpos; i < incrementals[snum].length; i++) {
 			removeClass(incrementals[snum][i], 'previous');
 			removeClass(incrementals[snum][i], 'current');
 			addClass(incrementals[snum][i], 'incremental');
@@ -200,6 +200,7 @@ function go(step) {
 	currentSlide();
 	loadNote();
 	permaLink();
+	setBodyClass();
 	number = undef;
 }
 
@@ -370,6 +371,10 @@ function findSlide(hash) {
 	return null;
 }
 
+function setBodyClass() {
+	document.body.className = document.body.className.replace(/\s+active\d+/, '')+' active'+snum;
+}
+
 function slideJump() {
 	if (window.location.hash == null) return;
 	var sregex = /^#slide(\d+)$/;
@@ -380,10 +385,14 @@ function slideJump() {
 	} else {
 		dest = findSlide(window.location.hash.slice(1));
 	}
-	if (dest == null)
+	if (dest == null) {
 		dest = getS5Cookie();
-	if (dest != null)
+	}
+	if (dest != null && dest != snum) {
 		go(dest - snum);
+	} else {
+		setBodyClass();
+	}
 }
 
 function fixLinks() {
