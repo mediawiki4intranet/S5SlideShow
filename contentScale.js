@@ -2,6 +2,10 @@ var isGe = navigator.userAgent.indexOf('Gecko') > -1 && navigator.userAgent.inde
 
 function contentScale(cont, hSize, vSize, initialFontSize)
 {
+	if (!cont)
+	{
+		return;
+	}
 	var fontSize = cont._lastFontSize || initialFontSize;
 	var cw, ch, aspect, img, w, h;
 	var sumSize = 0, sumCount = 0;

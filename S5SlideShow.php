@@ -149,7 +149,7 @@ class S5SlideShowHooks
             $center = true;
             $fp['align'] = 'none';
         }
-        $thumb = $file->getUnscaledThumb( isset( $hp['page'] ) ? $hp['page'] : false );
+        $thumb = $file->getUnscaledThumb( isset( $hp['page'] ) ? array( 'page' => $hp['page'] ) : false );
         $thumb->height = ceil( $thumb->height * $hp['width'] / $thumb->width );
         $thumb->width = $hp['width'];
         $params = array(

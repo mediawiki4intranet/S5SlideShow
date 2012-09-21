@@ -6,14 +6,17 @@ html>body div#header, html>body div#footer,
 .handout, .notes {display: none;}
 .layout {display: block;}
 .slide, .hideme, .incremental {visibility: hidden;}
+.slide embed, .hideme embed, .incremental embed,
+.slide iframe, .hideme iframe, .incremental iframe {visibility: hidden;}
 .visible {visibility: visible;}
 .anim.over .incremental, .anim.over .previous {display: none;}
 .notitle .slidecontent {margin: auto; display: table;}
 
 .slide, .incremental {visibility: visible; opacity: 0; z-index: -1;}
-.visible {opacity: 1;}
+.anim .current, .visible {opacity: 1;}
+.anim .current embed, .visible embed,
+.anim .current iframe, .visible iframe {visibility: visible; padding-left: 1px; /* work around bug with blank swf */}
 .anim .current, .slide {
-    opacity: 100%;
     transition: opacity 150ms ease-out 0s;
     -moz-transition: opacity 150ms ease-out 0s;
     -o-transition: opacity 150ms ease-out 0s;
