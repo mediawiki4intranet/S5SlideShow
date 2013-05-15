@@ -1,4 +1,47 @@
+/**
+ * HTML content scaler
+ * Author: (c) Vitaliy Filippov, 2011+
+ * License: Mozilla Public License 2.0 or later version
+ * Usage: contentScale(element, width, height, initialFontSize)
+ */
+
 var isGe = navigator.userAgent.indexOf('Gecko') > -1 && navigator.userAgent.indexOf('Safari') < 1 ? 1 : 0;
+
+function getRWidth(parent)
+{
+	// Get "real" content width, honoring width of overflowed child elements
+	var cs = parent.currentStyle || window.getComputedStyle && getComputedStyle(parent) || parent.style;
+	cs = /([\d\.]+)px/.exec(cs.paddingRight);
+	cs = cs ? parseFloat(cs[1]) : 0;
+	var w = parent.offsetWidth-cs;
+	var q = [ parent ];
+	var e, c, cw, co;
+	while (q.length)
+	{
+		e = q.shift();
+		c = e.children;
+		for (var i in c)
+		{
+			cw = c[i].offsetLeft;
+			co = c[i].offsetParent;
+			while (co && co != parent)
+			{
+				cw += co.offsetLeft;
+				co = co.offsetParent;
+			}
+			if (co == parent)
+			{
+				cw = cw + c[i].offsetWidth;
+				if (cw > w)
+				{
+					w = cw;
+				}
+				q.push(c[i]);
+			}
+		}
+	}
+	return [ w, cs ];
+}
 
 function contentScale(cont, hSize, vSize, initialFontSize)
 {
@@ -18,9 +61,9 @@ function contentScale(cont, hSize, vSize, initialFontSize)
 		t = 'MozT';
 	else if (document.body.style.WebkitTransform !== undefined)
 		t = 'WebkitT';
+	// Scale basing on height, so {vSize/content height} is within 0.95 and 1.11
 	for (var i = 0; i < 10; i++)
 	{
-		cw = cont.scrollWidth;
 		ch = cont.scrollHeight;
 		aspect = vSize/ch;
 		if (aspect >= 0.95 && aspect < 1.11)
@@ -28,97 +71,115 @@ function contentScale(cont, hSize, vSize, initialFontSize)
 		sumSize += fontSize*aspect;
 		sumCount++;
 		fontSize = Math.round(sumSize*100/sumCount)/100;
-		// Scale font:
-		setFontSize('#'+cont.id, fontSize+'px', initialFontSize+'px');
-		cont._lastFontSize = fontSize;
-		// Scale images:
-		var is = cont.getElementsByTagName('img');
-		for (var j = 0; j < is.length; j++)
-		{
-			img = is[j];
-			w = img.scrollWidth;
-			h = img.scrollHeight;
-			if (w > 0)
-			{
-				// FIXME this fails on display:none :(
-				img.style.width = Math.round(w*aspect)+'px';
-				img.style.height = Math.round(h*aspect)+'px';
-			}
-		}
-		// Scale SVG images:
-		is = cont.getElementsByTagName('object');
-		for (var j = 0; j < is.length; j++)
-		{
-			img = is[j];
-			if (img.type != 'image/svg+xml')
-				continue;
-			if (!img.origWidth)
-				img.origWidth = img.width;
-			w = Math.round(img.width*aspect);
-			h = Math.round(img.height*aspect);
-			var sc = w/img.origWidth;
-			var svg = img.contentDocument.documentElement;
-			// Scale width and height
-			svg.setAttribute('width', w);
-			svg.setAttribute('height', h);
-			img.width = w;
-			img.height = h;
-			// Scale viewBox
-			var box = svg.getAttribute('viewBox');
-			if (box)
-			{
-				box = box.split(/\s+/);
-				for (var i = 0; i < box.length; i++)
-					box[i] = box[i]*sc;
-				svg.setAttribute('viewBox', box);
-			}
-			// Move SVG contents into a layer
-			if (svg.childNodes.length > 1 || svg.childNodes[0].id != '_gsc')
-			{
-				var g = img.contentDocument.createElementNS('http://www.w3.org/2000/svg', 'g');
-				g.id = '_gsc';
-				while (svg.childNodes.length)
-					g.appendChild(svg.childNodes[0]);
-				svg.appendChild(g);
-			}
-			// Scale content layer
-			svg = svg.childNodes[0];
-			svg.setAttribute('transform', 'scale('+sc+' '+sc+')');
-		}
-		// Scale class="scaled" elements using CSS3 (VERY EXPERIMENTAL)
-		if (t && cont.getElementsByClassName)
-		{
-			is = cont.getElementsByClassName('scaled');
-			for (var j = 0; j < is.length; j++)
-			{
-				img = is[j];
-				if (window.wgSlideView)
-				{
-					if (!img.origWidth)
-						img.origWidth = img.scrollWidth;
-					img.style[t+'ransformOrigin'] = '0 0';
-					img.style[t+'ransform'] = 'scale('+(img.scrollWidth*aspect/img.origWidth)+')';
-				}
-				else
-				{
-					var p = img.parentNode;
-					if (p.nodeName != 'DIV' || !p._aspect)
-					{
-						// Wrap element into a scaled <div>
-						p = document.createElement('div');
-						p.style[t+'ransformOrigin'] = '0 0';
-						img.parentNode.insertBefore(p, img);
-						p.appendChild(img);
-					}
-					p._aspect = aspect * (p._aspect || 1);
-					p.style.height = Math.round(img.scrollHeight * p._aspect) + 'px';
-					p.style.width = Math.round(img.scrollWidth * p._aspect) + 'px';
-					p.style[t+'ransform'] = 'scale('+p._aspect+')';
-				}
-			}
-		}
-		reflowHack();
+		doScaleContent(cont, aspect, fontSize, t);
 	}
+	// Adjust basing on width, so {content width + padding} <= {hSize}
+	sumSize = sumCount = 0;
+	for (var i = 0; i < 10; i++)
+	{
+		cw = getRWidth(cont);
+		aspect = (hSize-cw[1])/cw[0];
+		if (aspect >= 1)
+			break;
+		sumSize += fontSize*aspect;
+		sumCount++;
+		fontSize = Math.round(sumSize*100/sumCount)/100;
+		doScaleContent(cont, aspect, fontSize, t);
+	}
+}
+
+function doScaleContent(cont, aspect, fontSize, t)
+{
+	// Scale font:
+	setFontSize('#'+cont.id, fontSize+'px', initialFontSize+'px');
+	cont._lastFontSize = fontSize;
+	// Scale images:
+	var is = cont.getElementsByTagName('img');
+	for (var j = 0; j < is.length; j++)
+	{
+		img = is[j];
+		w = img.scrollWidth;
+		h = img.scrollHeight;
+		if (w > 0)
+		{
+			// FIXME this fails on display:none :(
+			img.style.width = Math.round(w*aspect)+'px';
+			img.style.height = Math.round(h*aspect)+'px';
+		}
+	}
+	// Scale SVG images:
+	is = cont.getElementsByTagName('object');
+	for (var j = 0; j < is.length; j++)
+	{
+		img = is[j];
+		if (img.type != 'image/svg+xml')
+			continue;
+		if (!img.origWidth)
+			img.origWidth = img.width;
+		w = Math.round(img.width*aspect);
+		h = Math.round(img.height*aspect);
+		var sc = w/img.origWidth;
+		var svg = img.contentDocument.documentElement;
+		// Scale width and height
+		svg.setAttribute('width', w);
+		svg.setAttribute('height', h);
+		img.width = w;
+		img.height = h;
+		// Scale viewBox
+		var box = svg.getAttribute('viewBox');
+		if (box)
+		{
+			box = box.split(/\s+/);
+			for (var i = 0; i < box.length; i++)
+				box[i] = box[i]*sc;
+			svg.setAttribute('viewBox', box);
+		}
+		// Move SVG contents into a layer
+		if (svg.childNodes.length > 1 || svg.childNodes[0].id != '_gsc')
+		{
+			var g = img.contentDocument.createElementNS('http://www.w3.org/2000/svg', 'g');
+			g.id = '_gsc';
+			while (svg.childNodes.length)
+				g.appendChild(svg.childNodes[0]);
+			svg.appendChild(g);
+		}
+		// Scale content layer
+		svg = svg.childNodes[0];
+		svg.setAttribute('transform', 'scale('+sc+' '+sc+')');
+	}
+	// Scale class="scaled" elements using CSS3 (VERY EXPERIMENTAL)
+	if (t && cont.getElementsByClassName)
+	{
+		is = cont.getElementsByClassName('scaled');
+		for (var j = 0; j < is.length; j++)
+		{
+			img = is[j];
+			if (window.wgSlideView)
+			{
+				if (!img.origWidth)
+					img.origWidth = img.scrollWidth;
+				img.style[t+'ransformOrigin'] = '0 0';
+				img.style[t+'ransform'] = 'scale('+(img.scrollWidth*aspect/img.origWidth)+')';
+			}
+			else
+			{
+				var p = img.parentNode;
+				if (p.nodeName != 'DIV' || !p._aspect)
+				{
+					// Wrap element into a scaled <div>
+					p = document.createElement('div');
+					p.style[t+'ransformOrigin'] = '0 0';
+					img.parentNode.insertBefore(p, img);
+					p.appendChild(img);
+				}
+				p._aspect = aspect * (p._aspect || 1);
+				p.style.height = Math.round(img.scrollHeight * p._aspect) + 'px';
+				p.style.width = Math.round(img.scrollWidth * p._aspect) + 'px';
+				p.style[t+'ransform'] = 'scale('+p._aspect+')';
+			}
+		}
+	}
+	reflowHack();
 }
 
 function reflowHack()
