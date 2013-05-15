@@ -130,12 +130,11 @@ function doScaleContent(cont, aspect, fontSize, t)
 		img.width = w;
 		img.height = h;
 		// Scale viewBox
-		var box = svg.getAttribute('viewBox');
+		var box = svg._origViewBox || svg.getAttribute('viewBox');
+		svg._origViewBox = box;
 		if (box)
 		{
-			box = box.split(/\s+/);
-			for (var i = 0; i < box.length; i++)
-				box[i] = box[i]*sc;
+			box = box.replace(/-?\d+(\.\d+)?/g, function(m) { return parseFloat(m)*sc; });
 			svg.setAttribute('viewBox', box);
 		}
 		// Move SVG contents into a layer
