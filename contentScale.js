@@ -9,11 +9,14 @@ var isGe = navigator.userAgent.indexOf('Gecko') > -1 && navigator.userAgent.inde
 
 function getRWidth(parent)
 {
+	var curStyle = function(e)
+	{
+		return e.currentStyle || window.getComputedStyle && getComputedStyle(e) || e.style;
+	};
 	// Get "real" content width, honoring width of overflowed child elements
-	var cs = parent.currentStyle || window.getComputedStyle && getComputedStyle(parent) || parent.style;
-	cs = /([\d\.]+)px/.exec(cs.paddingRight);
-	cs = cs ? parseFloat(cs[1]) : 0;
-	var w = parent.offsetWidth-cs;
+	var pad = /([\d\.]+)px/.exec(curStyle(parent).paddingRight);
+	pad = pad ? parseFloat(pad[1]) : 0;
+	var w = parent.offsetWidth-pad;
 	var q = [ parent ];
 	var e, c, cw, co;
 	while (q.length)
@@ -31,16 +34,17 @@ function getRWidth(parent)
 			}
 			if (co == parent)
 			{
-				cw = cw + c[i].offsetWidth;
-				if (cw > w)
+				if (curStyle(c[i]).display != 'inline')
 				{
-					w = cw;
+					cw = cw + c[i].offsetWidth;
+					if (cw > w)
+						w = cw;
 				}
 				q.push(c[i]);
 			}
 		}
 	}
-	return [ w, cs ];
+	return [ w, pad ];
 }
 
 function contentScale(cont, hSize, vSize, initialFontSize)
