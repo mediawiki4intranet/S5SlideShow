@@ -92,6 +92,41 @@ function contentScale(cont, hSize, vSize, initialFontSize)
 	}
 }
 
+function doSVGScaling(img)
+{
+	var w = img.width;
+	var h = img.height;
+	var sc = w/img.origWidth;
+	var svg = img.contentDocument.documentElement;
+	// Scale width and height
+	svg.setAttribute('width', w);
+	svg.setAttribute('height', h);
+	// Scale viewBox
+	var box = svg._origViewBox || svg.getAttribute('viewBox');
+	svg._origViewBox = box;
+	if (box)
+	{
+		box = box.replace(/-?\d+(\.\d+)?/g, function(m) { return parseFloat(m)*sc; });
+		svg.setAttribute('viewBox', box);
+	}
+	// Move SVG contents into a layer
+	if (svg.childNodes.length > 1 || svg.childNodes[0].id != '_gsc')
+	{
+		var g = img.contentDocument.createElementNS('http://www.w3.org/2000/svg', 'g');
+		g.id = '_gsc';
+		while (svg.childNodes.length)
+			g.appendChild(svg.childNodes[0]);
+		svg.appendChild(g);
+	}
+	// Scale content layer
+	svg.childNodes[0].setAttribute('transform', 'scale('+sc+' '+sc+')');
+}
+
+function doSVGScalingThis()
+{
+	doSVGScaling(this);
+}
+
 function doScaleContent(cont, aspect, fontSize, t)
 {
 	// Scale font:
@@ -118,37 +153,17 @@ function doScaleContent(cont, aspect, fontSize, t)
 		img = is[j];
 		if (img.type != 'image/svg+xml')
 			continue;
-		if (!img.origWidth)
-			img.origWidth = img.width;
 		w = Math.round(img.width*aspect);
 		h = Math.round(img.height*aspect);
-		var sc = w/img.origWidth;
-		var svg = img.contentDocument.documentElement;
-		// Scale width and height
-		svg.setAttribute('width', w);
-		svg.setAttribute('height', h);
+		if (!img.origWidth)
+		{
+			img.origWidth = img.width;
+			// Workaround for Chrome - sometimes it reloads SVG images after showing the slide...
+			img.addEventListener('load', doSVGScalingThis);
+		}
 		img.width = w;
 		img.height = h;
-		// Scale viewBox
-		var box = svg._origViewBox || svg.getAttribute('viewBox');
-		svg._origViewBox = box;
-		if (box)
-		{
-			box = box.replace(/-?\d+(\.\d+)?/g, function(m) { return parseFloat(m)*sc; });
-			svg.setAttribute('viewBox', box);
-		}
-		// Move SVG contents into a layer
-		if (svg.childNodes.length > 1 || svg.childNodes[0].id != '_gsc')
-		{
-			var g = img.contentDocument.createElementNS('http://www.w3.org/2000/svg', 'g');
-			g.id = '_gsc';
-			while (svg.childNodes.length)
-				g.appendChild(svg.childNodes[0]);
-			svg.appendChild(g);
-		}
-		// Scale content layer
-		svg = svg.childNodes[0];
-		svg.setAttribute('transform', 'scale('+sc+' '+sc+')');
+		doSVGScaling(img);
 	}
 	// Scale class="scaled" elements using CSS3 (VERY EXPERIMENTAL)
 	if (t && cont.getElementsByClassName)
