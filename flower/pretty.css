@@ -4,7 +4,7 @@
    Note that the 'body' font size may have to be changed if the resolution is
     different than expected. */
 
-body {background: #fff url(blume.jpg) no-repeat; color: #222; font-size: 2em;}
+.body {background: #fff url(blume.jpg) no-repeat; color: #222; font-size: 2em;}
 :link, :visited {text-decoration: none;}
 #controls :active {color: #88A !important;}
 #controls :focus {outline: 1px dotted #227;}

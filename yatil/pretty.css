@@ -2,7 +2,7 @@
    Note that the 'body' font size may have to be changed if the resolution is
     different than expected. */
 
-body {background: #f3f3f3 url(bodybg.gif); color: #000; font-size: 2em; font-family: Verdana, Arial, sans-serif;}
+.body {background: #f3f3f3 url(bodybg.gif); color: #000; font-size: 2em; font-family: Verdana, Arial, sans-serif;}
 #controls :active {color: #88A !important;}
 #controls :focus {outline: 1px dotted #227;}
 

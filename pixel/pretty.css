@@ -4,7 +4,7 @@
    Note that the 'body' font size may have to be changed if the resolution is
     different than expected. */
 
-body {background: transparent url(pixelbg.gif) repeat-y; color: #08093F; font-size: 1.8em;}
+.body {background: transparent url(pixelbg.gif) repeat-y; color: #08093F; font-size: 1.8em;}
 :link, :visited {text-decoration: none;}
 #controls :active {color: #88A !important;}
 #controls :focus {outline: 1px dotted #227;}
