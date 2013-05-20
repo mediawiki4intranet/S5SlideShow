@@ -153,8 +153,8 @@ class S5SlideShowHooks
         $thumb->height = ceil( $thumb->height * $hp['width'] / $thumb->width );
         $thumb->width = $hp['width'];
         $params = array(
-            'alt' => $fp['alt'],
-            'title' => $fp['title'],
+            'alt' => @$fp['alt'],
+            'title' => @$fp['title'],
         );
         if (!empty($fp['link-url']))
             $params['custom-url-link'] = $fp['link-url'];
