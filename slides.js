@@ -501,7 +501,6 @@ function notOperaFix() {
 	slideCSS = document.getElementById('slideProj').href;
 	var slides = document.getElementById('slideProj');
 	var outline = document.getElementById('outlineStyle');
-	slides.setAttribute('media','screen');
 	outline.disabled = true;
 	if (isGe) {
 		slides.setAttribute('href','null');   // Gecko fix
@@ -846,6 +845,41 @@ function startup() {
 	document.onkeyup = keys;
 	document.onkeypress = trap;
 	document.onclick = clicker;
+}
+
+function printView()
+{
+	var ce, sl, wrap, lay;
+	var header = document.getElementsByClassName('header')[0];
+	var footer = document.getElementsByClassName('footer')[0];
+	for (sl = 0; ce = document.getElementById('slide'+sl); sl++)
+	{
+		wrap = document.createElement('div');
+		wrap.className = 'body';
+		if (s5ScaleEachSlide) {
+			contentScale(ce, 1122, 750/*793*/, initialFontSize);
+			wrap.style.fontSize = ce._lastFontSize+'px';
+		}
+		ce.parentNode.insertBefore(wrap, ce);
+		lay = document.createElement('div');
+		lay.className = 'layout';
+		lay.appendChild(header.cloneNode(true));
+		lay.appendChild(footer.cloneNode(true));
+		wrap.appendChild(lay);
+		wrap.appendChild(ce);
+		if (incrementals[sl].length > 0) {
+			for (var i = 0; i < incrementals[sl].length && i < incpos-1; i++) {
+				addClass(incrementals[sl][i], 'previous');
+				removeClass(incrementals[sl][i], 'current');
+				removeClass(incrementals[sl][i], 'incremental');
+			}
+		}
+	}
+	document.body.className = '';
+	header = document.getElementsByClassName('layout')[0];
+	header.parentNode.removeChild(header);
+	window.onresize = null;
+	go = function() {};
 }
 
 window.onload = startup;
