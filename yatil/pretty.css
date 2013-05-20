@@ -16,12 +16,12 @@ a:hover { text-decoration: underline; }
 .slide ul {margin-left: 85px; margin-right: 3%; list-style: disc; padding: 0;}
 .slide li {margin-top: 5px; margin-right: 0;}
 .slide p, li { line-height: 1.2; }
-div#header, div#footer {color: #AAB;
+div.header, div.footer {color: #AAB;
   font-family: Verdana, Helvetica, sans-serif;}
-div#header {background: #f3f3f3 url(head.gif) repeat top;
+div.header {background: #f3f3f3 url(head.gif) repeat top;
   line-height: 1px;}
-div#footer {color: #666;}
-#footer h2 {margin-top: 0.5em; font-style: normal;}
+div.footer {color: #666;}
+.footer h2 {margin-top: 0.5em; font-style: normal;}
 
 .slide h1 {position: absolute; top: 0.8em; left: 0; z-index: 1;
   margin-left: 85px; padding: 0; white-space: nowrap;

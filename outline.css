@@ -1,7 +1,7 @@
 /* don't change this unless you want the layout stuff to show up in the outline view! */
 
-.layout div, #footer *, #controlForm * {display: none;}
-#footer, #controls, #controlForm, #navLinks, #toggle {
+.layout div, .footer *, #controlForm * {display: none;}
+.footer, #controls, #controlForm, #navLinks, #toggle {
   display: block; visibility: visible; margin: 0; padding: 0;}
 #toggle {float: right; padding: 0.5em;}
 html>body #toggle {position: fixed; top: 0; right: 0;}

@@ -9,9 +9,9 @@
 .slide code.bad, code del {color: red;}
 .slide code.old {color: silver;}
 
-div#header, div#footer {background: #005; color: #AAB;
+div.header, div.footer {background: #005; color: #AAB;
   font-family: Verdana, Helvetica, sans-serif;}
-div#header {background: #005 url(bodybg.gif) -16px 0 no-repeat; height: 20%;
+div.header {background: #005 url(bodybg.gif) -16px 0 no-repeat; height: 20%;
   line-height: 1px;}
 
 .slide {padding-top: 5em; padding-bottom: 2em;}

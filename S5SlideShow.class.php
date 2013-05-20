@@ -317,7 +317,7 @@ class S5SlideShow
             $replace["[$v]"] = $this->parse($this->attr[$v], true);
         $replace['[addcss]'] = implode("\n", $this->css);
         if ($this->attr['font'])
-            $replace['[addcss]'] .= "\n.slide, div#header, div#footer { font-family: {$this->attr['font']}; }";
+            $replace['[addcss]'] .= "\n.slide, div.header, div.footer { font-family: {$this->attr['font']}; }";
         $replace['[addcss]'] = strip_tags($replace['[addcss]']);
         $replace['[style]'] = $this->attr['style'];
         $replace['[pageid]'] = $this->sArticle->getID();

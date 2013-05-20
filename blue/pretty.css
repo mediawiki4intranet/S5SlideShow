@@ -13,11 +13,11 @@
 .slide code.bad, code del {color: red;}
 .slide code.old {color: silver;}
 
-div#header, div#footer {background: #005; color: #9183BF;
+div.header, div.footer {background: #005; color: #9183BF;
   font-family: Verdana, Helvetica, sans-serif;}
-div#header {background: #005 url(bodybg.gif) -16px 0 no-repeat; height: 20%;
+div.header {background: #005 url(bodybg.gif) -16px 0 no-repeat; height: 20%;
   line-height: 1px;}
-div#footer {height: 36px; border-top: 1px solid #08093F; background: #000136 url(bluefooter.gif) top right no-repeat; }
+div.footer {height: 36px; border-top: 1px solid #08093F; background: #000136 url(bluefooter.gif) top right no-repeat; }
 
 .slide {
   font-family: georgia, Times, 'Times New Roman', serif;

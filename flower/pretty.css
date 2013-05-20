@@ -15,10 +15,10 @@
 .slide ul ul li {list-style: disc;}
 .slide img.leader {display: block; margin: 0 auto;}
 
-div#header, div#footer {background: transparent; color: #BA9384;
+div.header, div.footer {background: transparent; color: #BA9384;
   font-family: Verdana, Helvetica, sans-serif;}
-div#header {line-height: 1px;}
-div#footer {border-top: 1px solid #999999; background: #FFF0CF;}
+div.header {line-height: 1px;}
+div.footer {border-top: 1px solid #999999; background: #FFF0CF;}
 
 .slide {
 font-family: georgia, times, 'Times New Roman', serif; background: transparent url(blumerechts.jpg) right top no-repeat;

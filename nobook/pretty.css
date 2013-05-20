@@ -26,8 +26,8 @@ font-size: 2.25em;
 .slide code.bad, code del {color: red;}
 .slide code.old {color: silver;}
 
-div#header, div#footer {color: #AAB;}
-div#header {background: url(custis.png) 98% 50% no-repeat; height: 15%;
+div.header, div.footer {color: #AAB;}
+div.header {background: url(custis.png) 98% 50% no-repeat; height: 15%;
 	line-height: 1px; }
 
 .slide h1.stitle {
