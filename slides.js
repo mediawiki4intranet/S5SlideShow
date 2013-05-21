@@ -451,6 +451,7 @@ function createControls() {
 	}
 	controlsDiv.innerHTML = '<form action="#" id="controlForm"' + hideDiv + '>' +
 	'<div id="navLinks">' +
+	'<a id="print" href="javascript:openPrintView();" title="Print">&#9113;<\/a>' +
 	'<a accesskey="n" id="show-notes" href="javascript:createNotesWindow();" title="Show Notes">&equiv;<\/a>' +
 	'<a accesskey="t" id="toggle" href="javascript:toggle();">&#216;<\/a>' +
 	'<a accesskey="z" id="prev" href="javascript:go(-1);">&laquo;<\/a>' +
@@ -860,6 +861,15 @@ function startup()
 		document.onkeypress = trap;
 		document.onclick = clicker;
 		window.onresize = function(){setTimeout('windowChange()',5);}
+	}
+}
+
+function openPrintView()
+{
+	var pageSize = prompt("Enter page size in mm for printing (A4 = 297x210)", '297x210');
+	if (pageSize)
+	{
+		window.location.href = window.location.href + '&print=' + encodeURIComponent(pageSize);
 	}
 }
 
