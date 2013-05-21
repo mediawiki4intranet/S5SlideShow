@@ -606,7 +606,7 @@ class S5SkinArticle extends Article
     // Create the object and remember s5skin and s5file
     public function __construct($title, $s5skin, $s5file)
     {
-        $this->mTitle = &$title;
+        $this->mPage = $this->newPage( $title );
         $this->mOldId = NULL;
         $this->s5skin = $s5skin;
         $this->s5file = $s5file;
