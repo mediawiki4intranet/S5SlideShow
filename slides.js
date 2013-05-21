@@ -869,7 +869,7 @@ function openPrintView()
 	var pageSize = prompt("Enter page size in mm for printing (A4 = 297x210)", '297x210');
 	if (pageSize)
 	{
-		window.location.href = window.location.href + '&print=' + encodeURIComponent(pageSize);
+		window.location.href = window.location.href.replace(/#.*$/, '') + '&print=' + encodeURIComponent(pageSize);
 	}
 }
 
