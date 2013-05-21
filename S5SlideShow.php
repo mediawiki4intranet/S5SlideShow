@@ -1,12 +1,12 @@
 <?php
 
 /**
- * S5 extension for MediaWiki
+ * Extension to create slide shows from wiki pages using improved S5 (http://meyerweb.com/eric/tools/s5/)
  * Copyright (c) 2010+ Vitaliy Filippov <vitalif@mail.ru>
- *--
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,14 +18,9 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  * http://www.gnu.org/copyleft/gpl.html
- *--
- * Loosely based on 2005 extension by TooooOld <tianshuen@gmail.com>:
- * http://meta.wikimedia.org/wiki/User:BR/use_S5_slide_system_in_the_mediawiki/en
  */
 
 /**
- * Extension to create slideshows
- *
  * @author Vitaliy Filippov <vitalif@mail.ru>
  * @package MediaWiki
  * @subpackage Extensions
@@ -188,7 +183,13 @@ class S5SlideShowHooks
             if (preg_match('/[^\w-]/', $s5skin))
                 $s5skin = '';
             $print = $wgRequest->getVal('print');
-            $print = $print ? array_map('intval', explode('x', $print, 2)) : false;
+            if ($print)
+            {
+                preg_match_all('/\d+/s', $print, $print, PREG_PATTERN_ORDER);
+                $print = $print[0];
+            }
+            else
+                $print = false;
             if ($wgRequest->getVal('s5css'))
             {
                 // Get CSS for a given S5 style (from wiki-pages)
