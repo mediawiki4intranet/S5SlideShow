@@ -70,7 +70,7 @@ function contentScale(cont, hSize, vSize, initialFontSize)
 	{
 		ch = cont.scrollHeight;
 		aspect = vSize/ch;
-		if (aspect >= 0.95 && aspect < 1.11)
+		if (aspect >= 1 && aspect < 1.11)
 			break;
 		sumSize += fontSize*aspect;
 		sumCount++;

@@ -187,10 +187,12 @@ class S5SlideShowHooks
             $s5skin = trim($wgRequest->getVal('s5skin'));
             if (preg_match('/[^\w-]/', $s5skin))
                 $s5skin = '';
+            $print = $wgRequest->getVal('print');
+            $print = $print ? array_map('intval', explode('x', $print, 2)) : false;
             if ($wgRequest->getVal('s5css'))
             {
                 // Get CSS for a given S5 style (from wiki-pages)
-                S5SlideShow::genStyle($s5skin);
+                S5SlideShow::genStyle($s5skin, $print);
                 return false;
             }
             // Check if the article is readable
@@ -216,7 +218,7 @@ class S5SlideShowHooks
             $slideShow->loadContent();
             if ($s5skin)
                 $slideShow->attr['style'] = $s5skin;
-            $slideShow->genSlideFile();
+            $slideShow->genSlideFile($print);
             return false;
         }
         return true;

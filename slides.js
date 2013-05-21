@@ -101,7 +101,9 @@ function slideLabel() {
 		var did = 'slide' + n.toString();
 		obj.setAttribute('id',did);
 
-//		if (isOp) continue;   // Opera fix (hallvord)
+//		if (isOp) continue;  // Opera fix (hallvord)
+
+		if (!list) continue; // for print view
 
 		var otext = '';
 		var menu = obj.firstChild;
@@ -109,7 +111,7 @@ function slideLabel() {
 		while (menu && menu.nodeType == 3) {
 			menu = menu.nextSibling;
 		}
-	 	if (!menu) continue; // to cope with slides with only text nodes
+		if (!menu) continue; // to cope with slides with only text nodes
 
 		var menunodes = menu.childNodes;
 		for (var o = 0; o < menunodes.length; o++) {
@@ -826,25 +828,39 @@ function getS5Cookie()
 	return null;
 }
 
-function startup() {
+function startup()
+{
 	defaultCheck();
-	createControls();  // hallvord
-	slideLabel();
-	incrementals = createIncrementals();
-	noteLabel(); // [SI:060104] must follow slideLabel()
-	loadNote();
-	fixLinks();
-	externalLinks();
-	if (!isOp) notOperaFix();
-	else operaFix();
-	slideJump();
-	fontScale();
-	if (defaultView == 'outline') {
-		toggle();
+	if (defaultView == 'print')
+	{
+		slideLabel();
+		incrementals = createIncrementals();
+		if (!isOp) notOperaFix();
+		else operaFix();
+		printView();
 	}
-	document.onkeyup = keys;
-	document.onkeypress = trap;
-	document.onclick = clicker;
+	else
+	{
+		createControls(); // hallvord
+		slideLabel();
+		incrementals = createIncrementals();
+		noteLabel(); // [SI:060104] must follow slideLabel()
+		loadNote();
+		fixLinks();
+		externalLinks();
+		if (!isOp) notOperaFix();
+		else operaFix();
+		slideJump();
+		fontScale();
+		if (defaultView == 'outline')
+		{
+			toggle();
+		}
+		document.onkeyup = keys;
+		document.onkeypress = trap;
+		document.onclick = clicker;
+		window.onresize = function(){setTimeout('windowChange()',5);}
+	}
 }
 
 function printView()
@@ -857,7 +873,7 @@ function printView()
 		wrap = document.createElement('div');
 		wrap.className = 'body';
 		if (s5ScaleEachSlide) {
-			contentScale(ce, 1122, 750/*793*/, initialFontSize);
+			contentScale(ce, s5PrintPageSize[0], s5PrintPageSize[1], initialFontSize);
 			wrap.style.fontSize = ce._lastFontSize+'px';
 		}
 		ce.parentNode.insertBefore(wrap, ce);
@@ -878,9 +894,6 @@ function printView()
 	document.body.className = '';
 	header = document.getElementsByClassName('layout')[0];
 	header.parentNode.removeChild(header);
-	window.onresize = null;
-	go = function() {};
 }
 
 window.onload = startup;
-window.onresize = function(){setTimeout('windowChange()',5);}

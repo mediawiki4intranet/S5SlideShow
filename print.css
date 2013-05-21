@@ -1,10 +1,15 @@
-@page {size: 297mm 210mm; margin: 0;}
+/**
+ * Generated dynamically:
+ * @page {size: 297mm 210mm;}
+ * .body {width: 1122px; height: 793px;}
+ */
+@page {margin: 0;}
+html, body, .body {font-size: 24px;}
 .slide, ul {page-break-inside: avoid;}
 h1 {page-break-after: avoid;}
-html, body, .body {width: 1122px; height: 793px; font-size: 24px;}
 .body {page-break-inside: avoid; position: relative !important;}
 #controls, #currentSlide {display: none;}
-.slide {width: 1032px; position: absolute !important;}
+.slide {position: absolute !important;}
 .layout {height: 100%; position: relative;}
 .header, .footer {position: absolute !important;}
 

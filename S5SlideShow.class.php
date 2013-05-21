@@ -298,7 +298,7 @@ class S5SlideShow
     /**
      * Generate presentation HTML code
      */
-    function genSlideFile()
+    function genSlideFile($printPageSize = false)
     {
         global $egS5SlideTemplateFile;
         global $wgUser, $wgContLang, $wgOut;
@@ -319,9 +319,24 @@ class S5SlideShow
         if ($this->attr['font'])
             $replace['[addcss]'] .= "\n.slide, div.header, div.footer { font-family: {$this->attr['font']}; }";
         $replace['[addcss]'] = strip_tags($replace['[addcss]']);
+        $replace['[addscript]'] = '';
         $replace['[style]'] = $this->attr['style'];
+        $replace['[styleurl]'] = 'index.php?action=slide&s5skin='.$this->attr['style'].'&s5css=1';
         $replace['[pageid]'] = $this->sArticle->getID();
         $replace['[scaled]'] = $this->attr['scaled'] ? 'true' : 'false';
+        $replace['[defaultView]'] = 'slideshow';
+
+        if ($printPageSize)
+        {
+            // Default DPI
+            $dpi = 96;
+            $replace['[styleurl]'] .= '&print='.implode('x', $printPageSize = array_map('intval', $printPageSize));
+            $replace['[addcss]'] .= '@page {size: '.$printPageSize[0].'mm '.$printPageSize[1]."mm;}\n".
+                '.body {width: '.($w = floor($printPageSize[0]*$dpi/25.4)).
+                'px; height: '.($h = floor($printPageSize[1]*$dpi/25.4))."px;}\n";
+            $replace['[addscript]'] .= "var s5PrintPageSize = [ $w, $h ];\n";
+            $replace['[defaultView]'] = 'print';
+        }
 
         $slides_html = '';
         $slide0 = " visible";
@@ -390,11 +405,15 @@ class S5SlideShow
      * Generate CSS stylesheet for a given S5 skin
      * TODO cache generated stylesheets and flush the cache after saving style articles
      */
-    static function genStyle($skin)
+    static function genStyle($skin, $print = false)
     {
         global $wgOut;
         $dir = dirname(__FILE__);
         $css = '';
+        if ($print)
+        {
+            S5SlideShowHooks::$styles['print'] = 'print.css';
+        }
         foreach (S5SlideShowHooks::$styles as $k => $file)
         {
             $title = Title::newFromText("S5/$skin/$k", NS_MEDIAWIKI);
