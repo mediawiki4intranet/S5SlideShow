@@ -120,7 +120,6 @@ class S5SlideShowHooks
     // Hook that creates {{S5SLIDESHOW}} magic word
     static function MagicWordwgVariableIDs(&$mVariablesIDs)
     {
-        wfLoadExtensionMessages('UserMagic');
         $mVariablesIDs[] = 's5slideshow';
         return true;
     }
