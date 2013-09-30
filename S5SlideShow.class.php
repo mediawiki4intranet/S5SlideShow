@@ -487,16 +487,17 @@ class S5SlideShow
         $attr['content'] = $content;
         $slideShow = new S5SlideShow($parser->mTitle, NULL, $attr);
         $content = '';
+        $article = new Article($parser->mTitle);
         foreach (array('title', 'subtitle', 'author', 'footer', 'subfooter') as $key)
         {
-            if (isset($slideShow->attr[$key]))
+            if (isset($slideShow->attr[$key]) && $slideShow->attr[$key] != '')
             {
                 $value = $slideShow->attr[$key];
                 if (mb_strpos($value, "{{date}}") !== false)
                 {
                     $value = str_ireplace(
                         '{{date}}',
-                        $wgContLang->timeanddate($this->sArticle->getTimestamp(), true),
+                        $wgContLang->timeanddate($article->getTimestamp(), true),
                         $value
                     );
                 }
