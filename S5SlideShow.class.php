@@ -484,6 +484,49 @@ class S5SlideShow
             return '';
         }
         // Create slideshow object
+        // First check XML-params
+        $contentAttrs = array();
+        foreach (explode("\n;", $content) as $line)
+        {
+            if ($line == '')
+            {
+                continue;
+            }
+            list($key, $value) = explode(":", $line);
+            if (mb_substr($value, mb_strlen($value) - 1) == "\n")
+            {
+                $value = mb_substr($value, 0, mb_strlen($value) - 1);
+            }
+            $contentAttrs[$key] = $value;
+        }
+        // Add if not exists
+        foreach (array('title', 'subtitle', 'author', 'footer', 'subfooter') as $check)
+        {
+            if (!isset($contentAttrs[$check]) && isset($attr[$check]))
+            {
+                $contentAttrs[$check] = $attr[$check];
+            }
+        }
+        $content = "";
+        global $wgContLang;
+        $article = null;
+        foreach ($contentAttrs as $key=>$value)
+        {
+            // Replace Date template
+            if (mb_strpos($value, "{{date}}") !== false)
+            {
+                if ($article == null)
+                {
+                    $article = new Article($parser->mTitle);
+                }
+                $value = str_ireplace(
+                        '{{date}}',
+                        $wgContLang->timeanddate($article->getTimestamp(), true),
+                        $value
+                    );
+            }
+            $content .= "\n;" . wfMsg('s5slide-header-' . $key) . ': '. $value;
+        }
         $attr['content'] = $content;
         $slideShow = new S5SlideShow($parser->mTitle, NULL, $attr);
         // FIXME remove hardcoded '.png', /extensions/S5SlideShow/, "Slide Show"
