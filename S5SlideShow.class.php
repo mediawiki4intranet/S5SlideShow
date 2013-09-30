@@ -68,8 +68,31 @@ class S5SlideShow
         global $wgContLang, $wgUser, $egS5SlideHeadingMark, $egS5SlideIncMark, $egS5SlideCenterMark;
         // Get attributes from tag content
         if (preg_match_all('/(?:^|\n)\s*;\s*([^:\s]*)\s*:\s*([^\n]*)/is', $attr['content'], $m, PREG_SET_ORDER) > 0)
+        {
+            $newContent = array();
             foreach ($m as $set)
+            {
                 $attr[$set[1]] = trim($set[2]);
+                $newContent[$set[1]] = trim($set[2]);
+            }
+            if (!empty($newContent))
+            {
+                $newContentStr = "";
+                foreach ($newContent as $key=>$value)
+                {
+                    if (mb_strpos($value, "{{date}}") !== false)
+                    {
+                        $value = str_ireplace(
+                            '{{date}}',
+                            $wgContLang->timeanddate($this->sArticle->getTimestamp(), true),
+                            $value
+                        );
+                    }
+                    $newContentStr .= "\n;" . wfMsg('s5slide-header-' . $key) . ': '. $value;
+                }
+                $attr['content'] = $newContentStr;
+            }
+        }
         // Default values
         $attr = $attr + array(
             'title'       => $this->sTitle->getText(),
@@ -484,51 +507,9 @@ class S5SlideShow
             return '';
         }
         // Create slideshow object
-        // First check XML-params
-        $contentAttrs = array();
-        foreach (explode("\n;", $content) as $line)
-        {
-            if ($line == '')
-            {
-                continue;
-            }
-            list($key, $value) = explode(":", $line);
-            if (mb_substr($value, mb_strlen($value) - 1) == "\n")
-            {
-                $value = mb_substr($value, 0, mb_strlen($value) - 1);
-            }
-            $contentAttrs[$key] = $value;
-        }
-        // Add if not exists
-        foreach (array('title', 'subtitle', 'author', 'footer', 'subfooter') as $check)
-        {
-            if (!isset($contentAttrs[$check]) && isset($attr[$check]))
-            {
-                $contentAttrs[$check] = $attr[$check];
-            }
-        }
-        $content = "";
-        global $wgContLang;
-        $article = null;
-        foreach ($contentAttrs as $key=>$value)
-        {
-            // Replace Date template
-            if (mb_strpos($value, "{{date}}") !== false)
-            {
-                if ($article == null)
-                {
-                    $article = new Article($parser->mTitle);
-                }
-                $value = str_ireplace(
-                        '{{date}}',
-                        $wgContLang->timeanddate($article->getTimestamp(), true),
-                        $value
-                    );
-            }
-            $content .= "\n;" . wfMsg('s5slide-header-' . $key) . ': '. $value;
-        }
         $attr['content'] = $content;
         $slideShow = new S5SlideShow($parser->mTitle, NULL, $attr);
+        $content = $slideShow->attr['content'];
         // FIXME remove hardcoded '.png', /extensions/S5SlideShow/, "Slide Show"
         $url = $parser->mTitle->escapeLocalURL(array('action' => 'slide'));
         $style_title = Title::newFromText('S5-'.$slideShow->attr['style'].'-preview.png', NS_FILE);
