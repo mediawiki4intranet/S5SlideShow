@@ -68,31 +68,8 @@ class S5SlideShow
         global $wgContLang, $wgUser, $egS5SlideHeadingMark, $egS5SlideIncMark, $egS5SlideCenterMark;
         // Get attributes from tag content
         if (preg_match_all('/(?:^|\n)\s*;\s*([^:\s]*)\s*:\s*([^\n]*)/is', $attr['content'], $m, PREG_SET_ORDER) > 0)
-        {
-            $newContent = array();
             foreach ($m as $set)
-            {
                 $attr[$set[1]] = trim($set[2]);
-                $newContent[$set[1]] = trim($set[2]);
-            }
-            if (!empty($newContent))
-            {
-                $newContentStr = "";
-                foreach ($newContent as $key=>$value)
-                {
-                    if (mb_strpos($value, "{{date}}") !== false)
-                    {
-                        $value = str_ireplace(
-                            '{{date}}',
-                            $wgContLang->timeanddate($this->sArticle->getTimestamp(), true),
-                            $value
-                        );
-                    }
-                    $newContentStr .= "\n;" . wfMsg('s5slide-header-' . $key) . ': '. $value;
-                }
-                $attr['content'] = $newContentStr;
-            }
-        }
         // Default values
         $attr = $attr + array(
             'title'       => $this->sTitle->getText(),
@@ -500,7 +477,7 @@ class S5SlideShow
      */
     static function slideshow_view($content, $attr, $parser, $frame = NULL, $addmsg = '')
     {
-        global $wgScriptPath, $wgParser;
+        global $wgScriptPath, $wgParser, $wgContLang;
         if (!$parser->mTitle)
         {
             wfDebug(__METHOD__.": no title object in parser\n");
@@ -509,7 +486,23 @@ class S5SlideShow
         // Create slideshow object
         $attr['content'] = $content;
         $slideShow = new S5SlideShow($parser->mTitle, NULL, $attr);
-        $content = $slideShow->attr['content'];
+        $content = '';
+        foreach (array('title', 'subtitle', 'author', 'footer', 'subfooter') as $key)
+        {
+            if (isset($slideShow->attr[$key]))
+            {
+                $value = $slideShow->attr[$key];
+                if (mb_strpos($value, "{{date}}") !== false)
+                {
+                    $value = str_ireplace(
+                        '{{date}}',
+                        $wgContLang->timeanddate($this->sArticle->getTimestamp(), true),
+                        $value
+                    );
+                }
+                $content .= "\n;" . wfMsg('s5slide-header-' . $key) . ': '. $value;
+            }
+        }
         // FIXME remove hardcoded '.png', /extensions/S5SlideShow/, "Slide Show"
         $url = $parser->mTitle->escapeLocalURL(array('action' => 'slide'));
         $style_title = Title::newFromText('S5-'.$slideShow->attr['style'].'-preview.png', NS_FILE);
