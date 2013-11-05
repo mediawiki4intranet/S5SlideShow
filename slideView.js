@@ -17,6 +17,7 @@
     s5ss_addRule('.slide.withtitle { text-align: left; padding-left: 4px; }');
     s5ss_addRule('div#content .slide p', 'text-align: center;');
     s5ss_addRule('.slide .noslide { display: none; }');
+    s5ss_addRule('.anim.over .incremental:not(:last-child), .anim.over .previous { display: none; }');
 
     window.addEventListener('load', function() {
         var sl = document.getElementsByClassName('slide');

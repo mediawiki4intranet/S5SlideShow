@@ -165,15 +165,6 @@ function go(step) {
 	} else {
 		snum = parseInt(jl.value);
 	}
-	if (s5ScaleEachSlide) {
-		fontScale(); // Experimental slide font scaling
-	}
-	var nid = 'slide' + snum;
-	var ne = document.getElementById(nid);
-	if (!ne) {
-		ne = document.getElementById('slide0');
-		snum = 0;
-	}
 	if (step < 0) {incpos = incrementals[snum].length} else {incpos = 1}
 	if (incrementals[snum].length > 0) {
 		for (var i = 0; i < incrementals[snum].length && i < incpos-1; i++) {
@@ -189,6 +180,15 @@ function go(step) {
 			removeClass(incrementals[snum][i], 'current');
 			addClass(incrementals[snum][i], 'incremental');
 		}
+	}
+	if (s5ScaleEachSlide) {
+		fontScale(); // Slide font and/or content scaling
+	}
+	var nid = 'slide' + snum;
+	var ne = document.getElementById(nid);
+	if (!ne) {
+		ne = document.getElementById('slide0');
+		snum = 0;
 	}
 	if (isOp) { //hallvord
 		location.hash = nid;
@@ -882,6 +882,14 @@ function printView()
 	{
 		wrap = document.createElement('div');
 		wrap.className = 'body';
+		if (incrementals[sl].length > 0) {
+			for (var i = 0; i < incrementals[sl].length-1; i++) {
+				addClass(incrementals[sl][i], 'previous');
+				removeClass(incrementals[sl][i], 'current');
+				removeClass(incrementals[sl][i], 'incremental');
+				console.log(incrementals[sl][i].className);
+			}
+		}
 		if (s5ScaleEachSlide) {
 			contentScale(ce, s5PrintPageSize[0], s5PrintPageSize[1], initialFontSize);
 			wrap.style.fontSize = ce._lastFontSize+'px';
@@ -893,13 +901,6 @@ function printView()
 		lay.appendChild(footer.cloneNode(true));
 		wrap.appendChild(lay);
 		wrap.appendChild(ce);
-		if (incrementals[sl].length > 0) {
-			for (var i = 0; i < incrementals[sl].length && i < incpos-1; i++) {
-				addClass(incrementals[sl][i], 'previous');
-				removeClass(incrementals[sl][i], 'current');
-				removeClass(incrementals[sl][i], 'incremental');
-			}
-		}
 	}
 	document.body.className = '';
 	header = document.getElementsByClassName('layout')[0];
