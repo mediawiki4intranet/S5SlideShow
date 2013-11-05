@@ -141,8 +141,8 @@ function currentSlide() {
 	}
 }
 
-function go(step) {
-	if (document.getElementById('slideProj').disabled || step == 0) return;
+function go(step, force) {
+	if (document.getElementById('slideProj').disabled || step == 0 && !force) return;
 	if (s5ScaleEachSlide) {
 		setFontSize('body', '24px');
 		initialFontSize = 24;
@@ -390,8 +390,8 @@ function slideJump() {
 	if (dest == null) {
 		dest = getS5Cookie();
 	}
-	if (dest != null && dest != snum) {
-		go(dest - snum);
+	if (dest != null) {
+		go(dest - snum, true);
 	} else {
 		setBodyClass();
 	}
