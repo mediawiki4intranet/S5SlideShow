@@ -390,11 +390,8 @@ function slideJump() {
 	if (dest == null) {
 		dest = getS5Cookie();
 	}
-	if (dest != null) {
-		go(dest - snum, true);
-	} else {
-		setBodyClass();
-	}
+	dest = dest || 0;
+	go(dest - snum, true);
 }
 
 function fixLinks() {
@@ -882,15 +879,17 @@ function printView()
 	{
 		wrap = document.createElement('div');
 		wrap.className = 'body';
-		if (incrementals[sl].length > 0) {
-			for (var i = 0; i < incrementals[sl].length-1; i++) {
+		if (incrementals[sl].length > 0)
+		{
+			for (var i = 0; i < incrementals[sl].length-1; i++)
+			{
 				addClass(incrementals[sl][i], 'previous');
 				removeClass(incrementals[sl][i], 'current');
 				removeClass(incrementals[sl][i], 'incremental');
-				console.log(incrementals[sl][i].className);
 			}
 		}
-		if (s5ScaleEachSlide) {
+		if (s5ScaleEachSlide)
+		{
 			contentScale(ce, s5PrintPageSize[0], s5PrintPageSize[1], initialFontSize);
 			wrap.style.fontSize = ce._lastFontSize+'px';
 		}
