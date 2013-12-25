@@ -282,16 +282,20 @@ class S5SlideShow
         if ($this->slideParser)
             return $this->slideParser;
         global $wgParser, $wgUser;
-        $this->slideParser = clone $wgParser;
-        $this->slideParser->extS5 = $this;
-        $this->slideParser->extS5Hooks = 'parse2';
-        $this->slideParser->mShowToc = false;
         $this->parserOptions = ParserOptions::newFromUser($wgUser);
         $this->parserOptions->setEditSection(false);
         $this->parserOptions->setNumberHeadings(false);
         $this->parserOptions->enableLimitReport(false);
-        $output = $this->slideParser->parse(" ", $this->sTitle, $this->parserOptions, false, true);
-        return $this->slideParser;
+        // Since $this->parse() is only used in ?action=slide,
+        // we can use it directly without cloning or creating a new object
+        // But $wgParser may be a StubObject, so trigger unstub and first call init
+        $wgParser->parse(" ", $this->sTitle, $this->parserOptions, false, true);
+        $wgParser->setHook('slideshow', 'S5SlideShow::empty_tag_hook');
+        $wgParser->setHook('slide', 'S5SlideShow::empty_tag_hook');
+        $wgParser->setHook('slides', array($this, 'slides_parse'));
+        $wgParser->setHook('slidecss', array($this, 'slidecss_parse'));
+        $wgParser->mShowToc = false;
+        return $this->slideParser = $wgParser;
     }
 
     /**
