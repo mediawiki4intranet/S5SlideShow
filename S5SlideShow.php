@@ -34,8 +34,8 @@ $dir = dirname(__FILE__);
 //--- Default configuration ---//
 
 // Headings with this text will be treated as slide headings
-// Empty = do not treat subsections as slides by default
-$egS5SlideHeadingMark = '';
+// false = do not treat subsections as slides by default
+$egS5SlideHeadingMark = false;
 
 // All lists on slides with this text in heading will be shown step-by-step
 $egS5SlideIncMark = '\(step\)';

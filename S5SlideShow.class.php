@@ -124,8 +124,8 @@ class S5SlideShow
     function check_slide_heading($node)
     {
         $ot = trim($node->nodeValue, "= \n\r\t\v");
-        $st = preg_replace($this->heading_re, '', $ot);
-        if ($st != $ot)
+        $st = $this->attr['headingmark'] ? preg_replace($this->heading_re, '', $ot) : $ot;
+        if (!$this->attr['headingmark'] || $st != $ot)
         {
             $inc = false;
             $center = false;
@@ -168,11 +168,18 @@ class S5SlideShow
         }
         $doc = $node->node->ownerDocument;
         $all = $node->node->childNodes;
-        $this->heading_re = '/'.str_replace('/', '\\/', preg_quote($this->attr['headingmark'])).'/';
+        if ($this->attr['headingmark'])
+        {
+            $this->heading_re = '/'.str_replace('/', '\\/', preg_quote($this->attr['headingmark'])).'/';
+        }
         if ($this->attr['incmark'])
+        {
             $this->inc_re = '/'.str_replace('/', '\\/', preg_quote($this->attr['incmark'])).'/';
+        }
         if ($this->attr['centermark'])
+        {
             $this->center_re = '/'.str_replace('/', '\\/', preg_quote($this->attr['centermark'])).'/';
+        }
         for ($i = 0; $i < $all->length; $i++)
         {
             $c = $all->item($i);
@@ -205,16 +212,22 @@ class S5SlideShow
                 for ($j = $i+1; $j < $all->length; )
                 {
                     $d = $all->item($j);
-                    if ($this->check_slide_heading($d) !== NULL ||
-                        $d->nodeName == 'h' && $d->getAttribute('level') <= $c->getAttribute('level'))
+                    if ($d->nodeName == 'h' && ($this->check_slide_heading($d) !== NULL ||
+                        $d->getAttribute('level') <= $c->getAttribute('level')))
+                    {
                         break;
+                    }
                     if ($d->nodeName == 'ext')
                     {
                         $name = $d->getElementsByTagName('name');
                         if (count($name) != 1)
+                        {
                             die(__METHOD__.': Internal error, <ext> without <name> in DOM text');
+                        }
                         if (substr($name->item(0)->nodeValue, 0, 5) == 'slide')
+                        {
                             break;
+                        }
                     }
                     $node->node->removeChild($d);
                     $e->appendChild($d);
@@ -235,14 +248,18 @@ class S5SlideShow
     {
         global $wgParser, $wgUser;
         if ($content === NULL)
+        {
             $content = $this->pageContent;
+        }
         $this->getParser();
         $p = new Parser;
         $p->extS5 = $this;
         $p->extS5Hooks = 'parse';
         $p->parse($content, $this->sTitle, $this->parserOptions);
-        if ($this->attr['headingmark'])
+        if ($this->attr['headingmark'] !== false)
+        {
             $content = $this->transform_section_slides($content);
+        }
         $this->slides = array();
         $this->css = array();
         $this->parse($content);
@@ -250,9 +267,13 @@ class S5SlideShow
         {
             $slide['content_html'] = $this->parse($slide['content']);
             if ($slide['title'])
+            {
                 $slide['title_html'] = $this->parse($slide['title'], true);
+            }
             else
+            {
                 $slide['title_html'] = '';
+            }
         }
         return $this->slides;
     }
