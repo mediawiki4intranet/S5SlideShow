@@ -530,7 +530,7 @@ class S5SlideShow
             }
         }
         // FIXME remove hardcoded '.png', /extensions/S5SlideShow/, "Slide Show"
-        $url = $parser->mTitle->escapeLocalURL(array('action' => 'slide'));
+        $url = htmlspecialchars($parser->mTitle->getLocalUrl(array('action' => 'slide')));
         $style_title = Title::newFromText('S5-'.$slideShow->attr['style'].'-preview.png', NS_FILE);
         if ($style_title &&
             ($style_preview = wfLocalFile($style_title)) &&
