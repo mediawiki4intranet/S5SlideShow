@@ -133,6 +133,7 @@ class S5SlideShowHooks
     // Render pictures differently in slide show mode
     static function ImageBeforeProduceHTML($skin, &$title, &$file, &$frameParams, &$handlerParams, &$time, &$res)
     {
+        global $wgVersion;
         if (empty(self::$parsingSlide) || !$file || !$file->exists() || !isset($handlerParams['width']))
             return true;
         $fp = &$frameParams;
@@ -143,13 +144,21 @@ class S5SlideShowHooks
             $center = true;
             $fp['align'] = 'none';
         }
-        $thumb = $file->getUnscaledThumb( isset( $hp['page'] ) ? array( 'page' => $hp['page'] ) : false );
-        $thumb->height = ceil( $thumb->height * $hp['width'] / $thumb->width );
-        $thumb->width = $hp['width'];
+        $thumb = $file->getUnscaledThumb(isset($hp['page']) ? array('page' => $hp['page']) : false);
         $params = array(
             'alt' => @$fp['alt'],
             'title' => @$fp['title'],
         );
+        if (version_compare($wgVersion, '1.21', '>'))
+        {
+            $param['override-height'] = ceil($thumb->getHeight() * $hp['width'] / $thumb->getWidth());
+            $param['override-width'] = $hp['width'];
+        }
+        else
+        {
+            $thumb->height = ceil($thumb->height * $hp['width'] / $thumb->width);
+            $thumb->width = $hp['width'];
+        }
         if (!empty($fp['link-url']))
             $params['custom-url-link'] = $fp['link-url'];
         elseif (!empty($fp['link-title']))
