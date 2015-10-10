@@ -212,8 +212,7 @@ class S5SlideShow
                 for ($j = $i+1; $j < $all->length; )
                 {
                     $d = $all->item($j);
-                    if ($d->nodeName == 'h' && ($this->check_slide_heading($d) !== NULL ||
-                        $d->getAttribute('level') <= $c->getAttribute('level')))
+                    if ($d->nodeName == 'h')
                     {
                         break;
                     }
