@@ -208,7 +208,7 @@ class S5SlideShowHooks
             $title = $article->getTitle();
             for ($r = 0; $r < $wgMaxRedirects && $title->isRedirect(); $r++)
             {
-                if (!$title->userCanRead())
+                if (!$title->userCan('read'))
                     return true;
                 $title = $article->followRedirect();
                 $article = new Article($title);
