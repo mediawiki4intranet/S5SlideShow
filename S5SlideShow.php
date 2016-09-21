@@ -217,10 +217,10 @@ class S5SlideShowHooks
             // TODO remove support for loading text from session object and
             //      replace it by support for save-staying-in-edit-mode extension
             $content = $wgRequest->getVal('wpTextbox1');
-            if (!$content && isset($_SESSION['wpTextbox1']))
+            if (!$content && ($t1 = $wgRequest->getSessionData('wpTextbox1')))
             {
-                $content = $_SESSION['wpTextbox1'];
-                unset($_SESSION['wpTextbox1']);
+                $content = $t1;
+                $wgRequest->setSessionData('wpTextbox1', NULL);
             }
             // Generate presentation HTML content
             $slideShow = new S5SlideShow($title, $content);
