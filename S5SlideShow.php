@@ -151,8 +151,8 @@ class S5SlideShowHooks
         );
         if (version_compare($wgVersion, '1.22', '>='))
         {
-            $param['override-height'] = ceil($thumb->getHeight() * $hp['width'] / $thumb->getWidth());
-            $param['override-width'] = $hp['width'];
+            $params['override-height'] = ceil($thumb->getHeight() * $hp['width'] / $thumb->getWidth());
+            $params['override-width'] = $hp['width'];
         }
         else
         {
