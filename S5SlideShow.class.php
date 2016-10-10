@@ -283,6 +283,7 @@ class S5SlideShow
      */
     function parse($text, $inline = false, $title = NULL)
     {
+        global $wgOut;
         if (!$title)
             $title = $this->sTitle;
         $text = str_replace("__TOC__", '', trim($text));
@@ -293,6 +294,7 @@ class S5SlideShow
             $this->parserOptions, !$inline, false
         );
         S5SlideShowHooks::$parsingSlide = $prev;
+        $wgOut->addParserOutput($output);
         return $output->getText();
     }
 
@@ -316,6 +318,18 @@ class S5SlideShow
         $wgParser->setHook('slidecss', array($this, 'slidecss_parse'));
         $wgParser->mShowToc = false;
         return $this->slideParser = $wgParser;
+    }
+
+    function getHeadItems()
+    {
+        // Extract loader scripts and styles from OutputPage::headElement()
+        global $wgOut;
+        $wgOut->getContext()->setSkin($skin = new SkinApiClean());
+        $s = $wgOut->headElement($skin);
+        preg_match_all('/<script[^<>]*>.*?<\/script>|'.
+            '<link[^<>]*rel="stylesheet"[^<>]*>|'.
+            '<meta[^<>]*name="ResourceLoaderDynamicStyles"[^<>]*>/is', $s, $m, PREG_PATTERN_ORDER);
+        return implode("\n", $m[0]);
     }
 
     /**
@@ -392,7 +406,7 @@ class S5SlideShow
         }
 
         // substitute values
-        $replace['[headitems]'] = implode("\n", $this->getParser()->mOutput->getHeadItems());
+        $replace['[headitems]'] = $this->getHeadItems();
         $replace['[content]'] = $slides_html;
         $html = str_replace(
             array_keys($replace),
@@ -708,4 +722,10 @@ class S5SkinArticle extends Article
         $text = "<div class='noarticletext'>\n$text\n</div>";
         $wgOut->addWikiText($text);
     }
+}
+
+class SkinApiClean extends SkinApi {
+	public function setupSkinUserCss( OutputPage $out ) {
+		SkinTemplate::setupSkinUserCss( $out );
+	}
 }

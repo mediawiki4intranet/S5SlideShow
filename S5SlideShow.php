@@ -224,7 +224,6 @@ class S5SlideShowHooks
             }
             // Generate presentation HTML content
             $slideShow = new S5SlideShow($title, $content);
-            $slideShow->loadContent();
             if ($s5skin)
                 $slideShow->attr['style'] = $s5skin;
             $slideShow->genSlideFile($print);

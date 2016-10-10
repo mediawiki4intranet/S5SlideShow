@@ -476,3 +476,13 @@ div.gallerytext {
 }
 
 .dotsvg { display: none; }
+
+pre,
+.mw-code {
+	color: black;
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	padding: 1em;
+	/* Wrap lines in overflow. T2260, T103780 */
+	white-space: pre-wrap;
+}
