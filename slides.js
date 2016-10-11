@@ -619,7 +619,6 @@ function loadNote() {
 	var jl = document.getElementById('jumplist');
 	var slideTitle = jl.options[jl.selectedIndex].text.replace(/^\d+\s+:\s+/, '') + ((jl.selectedIndex) ? ' (' + jl.selectedIndex + '/' + (smax - 1) + ')' : '');
 	if (incrementals[snum].length > 0) {
-//		alert('howdy');
 		slideTitle += ' <small>[' + incpos + '/' + incrementals[snum].length + ']</small>';
 	}
 	if (jl.selectedIndex < smax - 1) {

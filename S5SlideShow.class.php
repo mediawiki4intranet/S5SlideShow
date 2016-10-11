@@ -377,7 +377,7 @@ class S5SlideShow
 
         $slides_html = '';
         $slide0 = " visible";
-        if ($replace['[author]'] !== '' && $replace['[title]'] !== '')
+        if (trim($replace['[author]']) !== '' && trim($replace['[title]']) !== '')
         {
             $slides_html .= '<div class="slide'.$slide0.'"><h1 class="stitle" style="margin-top: 0">'.$replace['[title]'].
                 '</h1><div class="slidecontent"><h1 style="margin-top: 0; font-size: 60%">'.
