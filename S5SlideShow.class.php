@@ -329,8 +329,8 @@ class S5SlideShow
         preg_match_all('/<script[^<>]*>.*?<\/script>|'.
             '<link[^<>]*rel="stylesheet"[^<>]*>|'.
             '<meta[^<>]*name="ResourceLoaderDynamicStyles"[^<>]*>/is', $s, $m, PREG_PATTERN_ORDER);
-        return implode("\n", $m[0]);
-    }
+        return implode("\n", array_filter($m[0], function($s) { return strpos($s, 'commonPrint') === false; }));
+     }
 
     /**
      * Generate presentation HTML code
@@ -724,8 +724,10 @@ class S5SkinArticle extends Article
     }
 }
 
-class SkinApiClean extends SkinApi {
-	public function setupSkinUserCss( OutputPage $out ) {
-		SkinTemplate::setupSkinUserCss( $out );
-	}
+class SkinApiClean extends SkinApi
+{
+    public function setupSkinUserCss(OutputPage $out)
+    {
+        SkinTemplate::setupSkinUserCss($out);
+    }
 }
