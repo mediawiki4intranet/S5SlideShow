@@ -65,7 +65,7 @@ class S5SlideShow
      */
     function setAttributes($attr)
     {
-        global $wgContLang, $wgUser, $egS5SlideHeadingMark, $egS5SlideIncMark, $egS5SlideCenterMark;
+        global $wgContLang, $wgUser, $egS5SlideHeadingMark, $egS5SlideIncMark, $egS5SlideCenterMark, $egDefaultStyle;
         // Get attributes from tag content
         if (preg_match_all('/(?:^|\n)\s*;\s*([^:\s]*)\s*:\s*([^\n]*)/is', $attr['content'], $m, PREG_SET_ORDER) > 0)
             foreach ($m as $set)
@@ -78,7 +78,7 @@ class S5SlideShow
             'headingmark' => $egS5SlideHeadingMark,
             'incmark'     => $egS5SlideIncMark,
             'centermark'  => $egS5SlideCenterMark,
-            'style'       => 'default',
+            'style'       => $egDefaultStyle,
             'font'        => '',
             // Backwards compatibility: appended CSS
             'addcss'      => '',
