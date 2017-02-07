@@ -60,6 +60,8 @@ $egS5SlideTemplateFile = $dir.'/slide.htm';
 // downsampled thumbnails. (default = true)
 $egS5BrowserScaleHack = true;
 
+$egDefaultStyle = 'default';
+
 //--- End configuration ---//
 
 /* Extension setup */
