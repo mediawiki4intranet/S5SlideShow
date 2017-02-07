@@ -60,6 +60,8 @@ $egS5SlideTemplateFile = $dir.'/slide.htm';
 // downsampled thumbnails. (default = true)
 $egS5BrowserScaleHack = true;
 
+//Default Style for presentations. Useful for not redefining 'default' style
+//but change all presentations by default to some "corporate" style.
 $egDefaultStyle = 'default';
 
 //--- End configuration ---//
