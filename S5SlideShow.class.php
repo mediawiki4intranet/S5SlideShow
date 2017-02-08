@@ -90,13 +90,19 @@ class S5SlideShow
         // Default author = last revision's author
         if (!isset($attr['author']))
         {
-            $u = $this->sArticle->getLastNAuthors(1);
-            $u = $u[0];
-            if (!is_object($u))
-                $u = User::newFromName($u);
-            if (!is_object($u))
-                $u = $wgUser;
-            $attr['author'] = $u->getRealName();
+			$attr['author'] = $wgUser;
+			if ($this->sArticle){
+				try{ 
+					// Here could fail on New Articles. 
+					$u = $this->sArticle->getLastNAuthors(1);
+					$u = $u[0];
+					if (!is_object($u))
+						$u = User::newFromName($u);
+					if (!is_object($u))
+						$u = $wgUser;
+					$attr['author'] = $u->getRealName();
+				} catch (Exception $e) {}
+			}
         }
         // Author and date in the subfooter by default
         if (!isset($attr['subfooter']))
