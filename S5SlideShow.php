@@ -62,7 +62,10 @@ $egS5BrowserScaleHack = true;
 
 //Default Style for presentations. Useful for not redefining 'default' style
 //but change all presentations by default to some "corporate" style.
-$egDefaultStyle = 'default';
+$egS5DefaultStyle = 'default';
+
+//Should Slides be scaled by default?
+$egS5Scaled = false;
 
 //--- End configuration ---//
 
