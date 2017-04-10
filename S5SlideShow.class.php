@@ -93,9 +93,11 @@ class S5SlideShow
 			$attr['author'] = $wgUser;
 			if ($this->sArticle){
 				try{ 
-					// Here could fail on New Articles. 
-					$u = $this->sArticle->getLastNAuthors(1);
-					$u = $u[0];
+					$u = $wgUser;
+					if ($this->sArticle->mRevision) {
+						$u = $this->sArticle->getLastNAuthors(1);
+						$u = $u[0];
+					}	
 					if (!is_object($u))
 						$u = User::newFromName($u);
 					if (!is_object($u))
