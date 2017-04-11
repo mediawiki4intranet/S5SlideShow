@@ -579,6 +579,7 @@ class S5SlideShow
             $html = '<script type="text/javascript">var wgSlideViewFont = "'.
                 addslashes($slideShow->attr['font']).'";</script>' . $html;
         }
+		$html = '<div id="slideshow-bundle">' . $html . '</div>';
         return $html;
     }
 
