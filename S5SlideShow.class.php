@@ -547,7 +547,7 @@ class S5SlideShow
                         $value
                     );
                 }
-                $content .= "\n;" . wfMsg('s5slide-header-' . $key) . ': '. $value;
+                $content .= "\n;" . wfMessage('s5slide-header-' . $key) . ': '. $value;
             }
         }
         // FIXME remove hardcoded '.png', /extensions/S5SlideShow/, "Slide Show"
