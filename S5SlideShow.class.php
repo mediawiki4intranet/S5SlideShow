@@ -87,24 +87,19 @@ class S5SlideShow
         );
         // Boolean value
         $attr['scaled'] = $attr['scaled'] == 'true' || $attr['scaled'] == 'yes' || $attr['scaled'] == 1;
-        // Default author = last revision's author
+        // Default author = first revision's author
         if (!isset($attr['author']))
         {
-			$attr['author'] = $wgUser;
-			if ($this->sArticle){
-				try{ 
-					$u = $wgUser;
-					if ($this->sArticle->mRevision) {
-						$u = $this->sArticle->getLastNAuthors(1);
-						$u = $u[0];
-					}	
-					if (!is_object($u))
-						$u = User::newFromName($u);
-					if (!is_object($u))
-						$u = $wgUser;
-					$attr['author'] = $u->getRealName();
-				} catch (Exception $e) {}
-			}
+            $rev = $this->sArticle->getOldestRevision();
+            if ($rev)
+            {
+                $attr['author'] = User::newFromId($rev->getUser())->getRealName();
+            }
+            else
+            {
+                // Not saved yet
+                $attr['author'] = $wgUser->getRealName();
+            }
         }
         // Author and date in the subfooter by default
         if (!isset($attr['subfooter']))
@@ -547,7 +542,7 @@ class S5SlideShow
                         $value
                     );
                 }
-                $content .= "\n;" . wfMsg('s5slide-header-' . $key) . ': '. $value;
+                $content .= "\n;" . wfMessage('s5slide-header-' . $key)->text() . ': '. $value;
             }
         }
         // FIXME remove hardcoded '.png', /extensions/S5SlideShow/, "Slide Show"
@@ -579,7 +574,7 @@ class S5SlideShow
             $html = '<script type="text/javascript">var wgSlideViewFont = "'.
                 addslashes($slideShow->attr['font']).'";</script>' . $html;
         }
-		$html = '<div id="slideshow-bundle">' . $html . '</div>';
+        $html = '<div id="slideshow-bundle">' . $html . '</div>';
         return $html;
     }
 
@@ -595,7 +590,7 @@ class S5SlideShow
     // <slides> - article view mode
     static function slides_view($content, $attr, $parser)
     {
-        if ($attr['split'])
+        if (!empty($attr['split']))
             $slides = preg_split('/'.str_replace('/', '\\/', $attr['split']).'/', $content);
         else
             $slides = array($content);
@@ -719,10 +714,10 @@ class S5SkinArticle extends Article
         $oldid = $this->getOldID();
         if ($oldid)
         {
-            $text = wfMsgNoTrans(
+            $text = wfMessage(
                 'missing-article', $this->mTitle->getPrefixedText(),
-                wfMsgNoTrans('missingarticle-rev', $oldid)
-            );
+                wfMessage('missingarticle-rev', $oldid)->plain()
+            )->plain();
         }
         else
             $text = $this->getContent();
