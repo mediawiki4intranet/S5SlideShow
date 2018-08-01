@@ -643,8 +643,10 @@ class S5SlideShow
     static function slidecss_view($content, $attr, $parser)
     {
         // use this CSS only for <slidecss view="true">
-        if ($attr['view'] == 'true' || $attr['view'] == '1')
+        if (!empty($attr['view']) && ($attr['view'] == 'true' || $attr['view'] == '1'))
+        {
             $parser->mOutput->addHeadItem('<style type="text/css">'.$content.'</style>');
+        }
         return '';
     }
 
