@@ -1,0 +1,8 @@
+{
+    "@metadata": { "authors": [ "Vitaliy Filippov", "AI Update" ] },
+    "s5slide-header-title": "Заголовок",
+    "s5slide-header-subtitle": "Подзаголовок",
+    "s5slide-header-footer": "Нижний колонтитул",
+    "s5slide-header-subfooter": "Дополнительный нижний колонтитул",
+    "s5slide-header-author": "Автор"
+}

@@ -1,0 +1,33 @@
+{
+    "name": "S5SlideShow",
+    "version": "2.0.0",
+    "author": [
+        "Vitaliy Filippov",
+        "AI Update"
+    ],
+    "description": "Extension to create slide shows from wiki pages using improved S5",
+    "url": "https://wiki.4intra.net/S5SlideShow",
+    "license-name": "GPL-2.0-or-later",
+    "type": "parserhook",
+    "requires": {
+        "MediaWiki": ">= 1.39.0"
+    },
+    "MessagesDirs": {
+        "S5SlideShow": [ "i18n" ]
+    },
+    "ExtensionMessagesFiles": {
+        "S5SlideShowMagic": "includes/MagicWords.php"
+    },
+    "AutoloadNamespaces": {
+        "MediaWiki\\Extension\\S5SlideShow\\": "includes/"
+    },
+    "Actions": {
+        "slide": "MediaWiki\\Extension\\S5SlideShow\\SlideAction"
+    },
+    "Hooks": {
+        "ParserFirstCallInit": "MediaWiki\\Extension\\S5SlideShow\\Hooks::onParserFirstCallInit",
+        "ImageBeforeProduceHTML": "MediaWiki\\Extension\\S5SlideShow\\Hooks::onImageBeforeProduceHTML",
+        "EditFormPreloadText": "MediaWiki\\Extension\\S5SlideShow\\Hooks::onEditFormPreloadText"
+    },
+    "manifest_version": 2
+}
