@@ -1,7 +1,6 @@
 /* Following are the presentation styles -- edit away! */
 
-.body {background: #FFF url(textbook.png) -16px 0 repeat fixed; color: #000; font-size: 2.25em;}
-
+.body {background: #FFF url(bodybg.gif) -16px 0 no-repeat; color: #000; font-size: 2em;}
 :link, :visited {text-decoration: none; color: #00C;}
 #controls :active {color: #88A !important;}
 #controls :focus {outline: 1px dotted #227;}
@@ -10,25 +9,26 @@
 .slide code.bad, code del {color: red;}
 .slide code.old {color: silver;}
 
-div.header, div.footer {color: #AAB;}
-div.header {height: 15%;  line-height: 1px; }
+div.header, div.footer {background: #005; color: #AAB;
+  font-family: Verdana, Helvetica, sans-serif;}
+div.header {background: #005 url(bodybg.gif) -16px 0 no-repeat; height: 20%;
+  line-height: 1px;}
 
-.slide h1.stitle {position: relative; z-index: 1;
-  margin: -2em 0 0.5em 0; padding: 0.3em 0 0 50px;
-  width: 80%;
-  font-size: 150%/1em;
-  font-weight: bold;}
-.slide.notitle h1.stitle {position: static; margin: 0; padding: 0; width: auto;}
+.slide {padding-top: 5em; padding-bottom: 2em;}
+.slide h1 {position: absolute; top: 0.5em; left: 87px; z-index: 1;
+  margin: 0; padding: 0.3em 0 0 50px; white-space: nowrap;
+  font: bold 40pt Helvetica, sans-serif; text-transform: capitalize;
+  color: #DDE; background: #005;}
 .slide h3 {font-size: 130%;}
 
-div#controls {left: 60%; width: 40%;}
 #controls #navLinks a {background: #005; color: #779;}
 #controls #navList #jumplist {background: #DDD; color: #227;}
 
-#currentSlide {text-align: center; font-size: 20pt; color: #449;}
+#currentSlide {text-align: center; font-size: 20pt;}
+#currentSlide a {color: #449;}
 
 #slide0 {padding-top: 3.5em; font-size: 90%;}
-#slide0 h1 {position: static; margin: 1em 0 0; padding: 0;
+#slide0 h1 {position: static; padding: 1.2em 0 0;
    font: bold 2em Helvetica, sans-serif; white-space: normal;
    color: #000; background: transparent;}
 #slide0 h2 {font: bold italic 1em Helvetica, sans-serif; margin: 0.25em;}
