@@ -182,16 +182,17 @@ S5 поддерживает печать и экспорт в PDF. Интера�
 - [Визуализация алгоритмов](https://discopal.ispras.ru/index.php?title=%D0%92%D0%B8%D0%B7%D1%83%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F_%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC%D0%BE%D0%B2&action=slide)
 - [Let's do it quicky! With video…](https://wiki.4intra.net/index.php?title=User:StasFomin/VideoKnowHow&action=slide)
 - [MiniDV камеры от Panasonic](https://wiki.4intra.net/index.php?title=User:StasFomin/VideoKnowHow&action=slide)
-
+- … 
+- тысячи внутренних презентаций, увы, показать нельзя.
 
 
 ### Совместимость
-    - ветка `REL1_44` тестировалась на `MediaWiki 1.44` / `PHP 8.4+`.
-    - подключать
-        ```php
-        wfLoadExtension( 'S5SlideShow');
-        ```
-        или, если в нестандартной папке, не `extensions`
-        ```php
-        wfLoadExtension( 'S5SlideShow', "$myextensions/S5SlideShow/extension.json" );
-        ```
+- ветка `REL1_44` тестировалась на `MediaWiki 1.44` / `PHP 8.4+`.
+- подключать
+    ```php
+    wfLoadExtension( 'S5SlideShow');
+    ```
+    или, если в нестандартной папке, не `extensions`
+    ```php
+    wfLoadExtension( 'S5SlideShow', "$myextensions/S5SlideShow/extension.json" );
+    ```
