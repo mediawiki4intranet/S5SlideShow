@@ -401,7 +401,10 @@ class S5SlideShow {
                 if ( mb_strpos( $value, "{{date}}" ) !== false ) {
                     $value = str_ireplace( '{{date}}', $services->getContentLanguage()->timeanddate( $timestamp, true ), $value );
                 }
-                $contentStr .= "\n;S5: " . $value;
+                
+                // Исправлено: берем локализованное название (Заголовок, Автор и т.д.)
+                $msg = wfMessage( 's5slide-header-' . $key )->text();
+                $contentStr .= "\n;{$msg}: " . $value;
             }
         }
 
@@ -420,6 +423,7 @@ class S5SlideShow {
         }
         return '<div id="slideshow-bundle">' . $html . '</div>';
     }
+
 
     public function slideshow_parse( $content, $attr, $parser ) {
         $attr['content'] = $content;
