@@ -14,36 +14,13 @@ class Hooks {
     ];
 
     public static function onParserFirstCallInit( Parser $parser ) {
-        $s5Hooks = null;
-        $s5 = null;
-        if ( method_exists( $parser, 'getData' ) ) {
-            $s5Hooks = $parser->getData( 's5hooks' );
-            $s5 = $parser->getData( 's5' );
-        } else {
-            if ( isset( $parser->extS5Hooks ) ) {
-                $s5Hooks = $parser->extS5Hooks;
-            }
-            if ( isset( $parser->extS5 ) ) {
-                $s5 = $parser->extS5;
-            }
-        }
+        // This hook is for standard page views.
+        // For slide generation, hooks are set directly in S5SlideShow::loadContent.
+        $parser->setHook( 'slideshow', [ S5SlideShow::class, 'slideshow_view' ] );
+        $parser->setHook( 'slide', [ S5SlideShow::class, 'slideshow_legacy' ] );
+        $parser->setHook( 'slides', [ S5SlideShow::class, 'slides_view' ] );
+        $parser->setHook( 'slidecss', [ S5SlideShow::class, 'slidecss_view' ] );
 
-        if ( $s5Hooks === null ) {
-            $parser->setHook( 'slideshow', [ S5SlideShow::class, 'slideshow_view' ] );
-            $parser->setHook( 'slide', [ S5SlideShow::class, 'slideshow_legacy' ] );
-            $parser->setHook( 'slides', [ S5SlideShow::class, 'slides_view' ] );
-            $parser->setHook( 'slidecss', [ S5SlideShow::class, 'slidecss_view' ] );
-        } elseif ( $s5Hooks == 'parse' ) {
-            $parser->setHook( 'slideshow', [ $s5, 'slideshow_parse' ] );
-            $parser->setHook( 'slide', [ $s5, 'slideshow_parse' ] );
-            $parser->setHook( 'slides', [ S5SlideShow::class, 'empty_tag_hook' ] );
-            $parser->setHook( 'slidecss', [ S5SlideShow::class, 'empty_tag_hook' ] );
-        } elseif ( $s5Hooks == 'parse2' ) {
-            $parser->setHook( 'slideshow', [ S5SlideShow::class, 'empty_tag_hook' ] );
-            $parser->setHook( 'slide', [ S5SlideShow::class, 'empty_tag_hook' ] );
-            $parser->setHook( 'slides', [ $s5, 'slides_parse' ] );
-            $parser->setHook( 'slidecss', [ $s5, 'slidecss_parse' ] );
-        }
         $parser->setFunctionHook( 's5slideshow', function( $parser ) {
             return empty( self::$parsingSlide ) ? '' : '1';
         } );
