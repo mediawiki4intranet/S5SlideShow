@@ -14,21 +14,24 @@ class Hooks {
     ];
 
     public static function onParserFirstCallInit( Parser $parser ) {
-        if ( !isset( $parser->extS5Hooks ) ) {
+        $s5Hooks = $parser->getData( 's5hooks' );
+        if ( $s5Hooks === null ) {
             $parser->setHook( 'slideshow', [ S5SlideShow::class, 'slideshow_view' ] );
             $parser->setHook( 'slide', [ S5SlideShow::class, 'slideshow_legacy' ] );
             $parser->setHook( 'slides', [ S5SlideShow::class, 'slides_view' ] );
             $parser->setHook( 'slidecss', [ S5SlideShow::class, 'slidecss_view' ] );
-        } elseif ( $parser->extS5Hooks == 'parse' ) {
-            $parser->setHook( 'slideshow', [ $parser->extS5, 'slideshow_parse' ] );
-            $parser->setHook( 'slide', [ $parser->extS5, 'slideshow_parse' ] );
+        } elseif ( $s5Hooks == 'parse' ) {
+            $s5 = $parser->getData( 's5' );
+            $parser->setHook( 'slideshow', [ $s5, 'slideshow_parse' ] );
+            $parser->setHook( 'slide', [ $s5, 'slideshow_parse' ] );
             $parser->setHook( 'slides', [ S5SlideShow::class, 'empty_tag_hook' ] );
             $parser->setHook( 'slidecss', [ S5SlideShow::class, 'empty_tag_hook' ] );
-        } elseif ( $parser->extS5Hooks == 'parse2' ) {
+        } elseif ( $s5Hooks == 'parse2' ) {
+            $s5 = $parser->getData( 's5' );
             $parser->setHook( 'slideshow', [ S5SlideShow::class, 'empty_tag_hook' ] );
             $parser->setHook( 'slide', [ S5SlideShow::class, 'empty_tag_hook' ] );
-            $parser->setHook( 'slides', [ $parser->extS5, 'slides_parse' ] );
-            $parser->setHook( 'slidecss', [ $parser->extS5, 'slidecss_parse' ] );
+            $parser->setHook( 'slides', [ $s5, 'slides_parse' ] );
+            $parser->setHook( 'slidecss', [ $s5, 'slidecss_parse' ] );
         }
         $parser->setFunctionHook( 's5slideshow', function( $parser ) {
             return empty( self::$parsingSlide ) ? '' : '1';
