@@ -4,5 +4,7 @@
     "s5slide-header-subtitle": "Подзаголовок",
     "s5slide-header-footer": "Нижний колонтитул",
     "s5slide-header-subfooter": "Дополнительный нижний колонтитул",
-    "s5slide-header-author": "Автор"
+    "s5slide-header-author": "Автор",
+    "s5slideshow-tracking-category": "Страницы с презентациями",
+    "s5slideshow-tracking-category-desc": "Эта служебная категория содержит страницы, на которых есть презентации, созданные с помощью расширения S5SlideShow."
 }

@@ -387,6 +387,7 @@ class S5SlideShow {
         $services = MediaWikiServices::getInstance();
         $extPath = $services->getMainConfig()->get( 'ExtensionAssetsPath' ) . '/S5SlideShow';
         $title = $parser->getTitle();
+        $parser->addTrackingCategory( 's5slideshow-tracking-category' );
         
         $attr['content'] = $content;
         $slideShow = new S5SlideShow( $title, null, $attr );

@@ -4,5 +4,7 @@
     "s5slide-header-subtitle": "Subtitle",
     "s5slide-header-footer": "Footer",
     "s5slide-header-subfooter": "Subfooter",
-    "s5slide-header-author": "Author"
+    "s5slide-header-author": "Author",
+    "s5slideshow-tracking-category": "Pages with slideshows",
+    "s5slideshow-tracking-category-desc": "This tracking category lists pages that include a slideshow created with the S5SlideShow extension."
 }
